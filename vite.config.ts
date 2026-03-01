@@ -33,15 +33,11 @@ export default defineConfig(({ mode }) => ({
             sizes: "any",
             type: "image/svg+xml"
           },
+          // fallback raster icons (you can replace with your own PNGs)
           {
-            src: "pwa-192x192.png",
-            sizes: "192x192",
-            type: "image/png"
-          },
-          {
-            src: "pwa-512x512.png",
-            sizes: "512x512",
-            type: "image/png"
+            src: "favicon.ico",
+            sizes: "32x32",
+            type: "image/x-icon"
           }
         ]
       }
