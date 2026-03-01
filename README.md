@@ -1,4 +1,4 @@
-# 🚀 CodeMate
+# CodeMate
 
 **Code together. Build better.**
 
@@ -112,17 +112,6 @@ CodeMate features:
 
 ---
 
-## 👥 Team Legion
-
-### Leadership
-- **Team Leader**: Subh Kumar Mishra
-
-### Core Members
-- **Shivam Mishra** - Full-stack Development
-- **Vinit Mishra** - UI/UX & Frontend
-
----
-
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -211,57 +200,16 @@ CodeMate supports 20+ skills across:
 - [ ] Certification system
 
 ---
+## 👥 Team Legion
+
+### Leadership
+- **Team Leader**: Subh Kumar Mishra
+
+### Core Members
+- **Shivam Mishra** - Full-stack Development
+- **Vinit Mishra** - UI/UX & Frontend
 
 ## 📝 License
 
 CodeMate is developed for educational purposes.
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! If you'd like to contribute, please:
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
-## 📧 Contact & Support
-
-For support, please visit our Help & Support section in the app or contact us through the support channels.
-
----
-
-**Made with ❤️ by Team Legion**
-
-*Last Updated: March 2026*
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
-"# CodeMate-Code_Together.Build_Better." 
-"# CodeMate-Code_Together.Build_Better."  
-"# CodeMate-Code_Together.Build_Better."  
+ 
