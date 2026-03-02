@@ -42,19 +42,19 @@ const Signup = () => {
   return (
     <div className="flex min-h-screen">
       {/* left branding similar to Login */}
-      <div className="relative hidden flex-1 items-center justify-center overflow-hidden gradient-login lg:flex">
+      <div className="relative hidden flex-1 items-center justify-center gradient-login lg:flex">
         <div className="absolute -top-20 -left-20 h-72 w-72 rounded-full bg-primary/30 animate-float blur-3xl" />
         <div className="absolute bottom-10 right-[-60px] h-96 w-96 rounded-full bg-secondary/20 animate-float" />
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3 }}
-          className="relative z-10 flex flex-col items-center text-center px-8"
+          className="relative z-10 flex flex-col items-center text-center px-8 max-w-xs"
         >
           <img
             src={codemateLogo}
             alt="CodeMate"
-            className="mb-6 max-h-28 max-w-28 rounded-2xl object-contain shadow-2xl animate-glow"
+            className="mb-6 max-h-48 max-w-[90%] rounded-2xl object-contain shadow-2xl animate-glow mx-auto"
           />
           <h1 className="mb-2 font-heading text-4xl font-bold text-primary-foreground text-gradient">
             Join CodeMate
