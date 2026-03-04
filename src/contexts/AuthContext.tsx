@@ -46,9 +46,9 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 const DEMO_USERS: Record<Role, User> = {
   student: {
-    name: "Arjun Kumar", email: "arjun@college.edu", role: "student", initials: "AK",
-    department: "CSE", semester: 6, skills: ["React", "Python", "TypeScript", "ML/AI"],
-    phone: "+91 98765 43210", linkedin: "linkedin.com/in/arjunkumar", github: "github.com/arjunkumar",
+    name: "Subh Mishra", email: "subhkumar.a.mishra24@slrtce.in", role: "student", initials: "SM",
+    department: "IT", semester: 4, skills: ["React", "Python", "TypeScript", "ML/AI"],
+    phone: "+91 8879298015", linkedin: "https://www.linkedin.com/in/subh-mishra-76a635374/", github: "https://github.com/subhmishrasketch?tab=repositories",
   },
   admin: {
     name: "Dr. Mehra", email: "admin@college.edu", role: "admin", initials: "DM",

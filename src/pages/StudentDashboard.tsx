@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { FolderOpen, Users, Trophy, TrendingUp, Zap, Clock, Mail, Phone, UserPlus, Eye, Star, CheckCircle2, ArrowRight } from "lucide-react";
+import { FolderOpen, Users, Trophy, TrendingUp, Zap, Clock, Mail, Phone, UserPlus, Eye, Star, CheckCircle2, ArrowRight, Github, Linkedin, Award, BookOpen, MessageSquare, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -13,6 +13,16 @@ const stats = [
   { label: "Activity Points", value: "145", sub: "+15 this month", icon: Trophy, color: "text-success" },
   { label: "Skill Matches", value: "12", sub: "3 new today", icon: TrendingUp, color: "text-primary" },
 ];
+
+// User profiles database
+const userProfiles: Record<string, any> = {
+  "Priya Sharma": { avatar: "P", email: "priya@college.edu", phone: "+91 99887 11223", department: "CSE", semester: "7", skills: ["React", "Python", "TensorFlow", "AR", "UI/UX Design"], github: "https://github.com/priya", linkedin: "https://linkedin.com/in/priya", activityPoints: 285, pastProjects: 8, connections: 42 },
+  "Rahul Mehta": { avatar: "R", email: "rahul@college.edu", phone: "+91 98765 44332", department: "CSE", semester: "6", skills: ["React", "Node.js", "IoT", "D3.js", "System Design"], github: "https://github.com/rahul", linkedin: "https://linkedin.com/in/rahul", activityPoints: 215, pastProjects: 6, connections: 38 },
+  "Neha Rao": { avatar: "N", email: "neha@college.edu", phone: "+91 91234 56789", department: "IT", semester: "7", skills: ["Python", "OpenCV", "Flask", "React", "ML"], github: "https://github.com/neha", linkedin: "https://linkedin.com/in/neha", activityPoints: 198, pastProjects: 5, connections: 35 },
+  "Vikram Patel": { avatar: "V", email: "vikram@college.edu", phone: "+91 88776 55443", department: "CSE", semester: "5", skills: ["React Native", "Node.js", "MongoDB", "Stripe", "AWS"], github: "https://github.com/vikram", linkedin: "https://linkedin.com/in/vikram", activityPoints: 156, pastProjects: 4, connections: 28 },
+  "Ananya Iyer": { avatar: "A", email: "ananya@college.edu", phone: "+91 77665 44332", department: "IT", semester: "8", skills: ["TypeScript", "PostgreSQL", "React", "IoT", "DevOps"], github: "https://github.com/ananya", linkedin: "https://linkedin.com/in/ananya", activityPoints: 312, pastProjects: 9, connections: 51 },
+  "Rohan Gupta": { avatar: "R", email: "rohan@college.edu", phone: "+91 66554 33221", department: "CSE", semester: "6", skills: ["React", "Node.js", "Docker", "ML/AI", "System Architecture"], github: "https://github.com/rohan", linkedin: "https://linkedin.com/in/rohan", activityPoints: 241, pastProjects: 7, connections: 44 },
+};
 
 const projects = [
   {
@@ -113,10 +123,15 @@ const item = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
 const StudentDashboard = () => {
   const { user } = useAuth();
   const [selectedProject, setSelectedProject] = useState<typeof projects[0] | null>(null);
+  const [selectedProfile, setSelectedProfile] = useState<any>(null);
 
   const handleJoin = (projectTitle: string) => {
     toast.success(`Request sent to join "${projectTitle}"! 🎉`);
     setSelectedProject(null);
+  };
+
+  const openProfile = (author: string) => {
+    setSelectedProfile(userProfiles[author] ? { name: author, ...userProfiles[author] } : null);
   };
 
   return (
@@ -341,17 +356,20 @@ const StudentDashboard = () => {
                 </div>
 
                 {/* Project Lead */}
-                <motion.div whileHover={{ backgroundColor: "rgba(0,0,0,0.05)" }} className="rounded-lg bg-muted/30 p-4 border border-border transition-colors">
+                <motion.div whileHover={{ backgroundColor: "rgba(0,0,0,0.05)" }} className="rounded-lg bg-muted/30 p-4 border border-border transition-colors cursor-pointer group" onClick={() => openProfile(selectedProject.author)}>
                   <h3 className="font-semibold mb-3 flex items-center gap-2">
                     <Users className="h-5 w-5 text-primary" /> Project Lead
                   </h3>
                   <div className="space-y-2">
-                    <p className="font-semibold text-sm">{selectedProject.author}</p>
+                    <motion.p whileHover={{ color: "var(--color-primary)" }} className="font-semibold text-sm group-hover:text-primary transition-colors">{selectedProject.author}</motion.p>
                     <div className="flex flex-col gap-1 text-sm text-muted-foreground">
                       <span className="flex items-center gap-2"><Mail className="h-4 w-4" /> {selectedProject.authorEmail}</span>
                       <span className="flex items-center gap-2"><Phone className="h-4 w-4" /> {selectedProject.authorPhone}</span>
                     </div>
                   </div>
+                  <motion.p className="text-xs text-primary mt-3 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                    <eye className="h-3 w-3" /> View Profile
+                  </motion.p>
                 </motion.div>
               </div>
 
@@ -371,6 +389,193 @@ const StudentDashboard = () => {
                   className="flex-1 flex items-center justify-center gap-2 rounded-lg gradient-primary py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity">
                   <UserPlus className="h-4 w-4" /> Ask to Join Project
                 </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* User Profile Modal */}
+      <AnimatePresence>
+        {selectedProfile && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedProfile(null)}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+            <motion.div 
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-2xl rounded-2xl border border-border/50 bg-card backdrop-blur-xl overflow-hidden shadow-2xl">
+              
+              {/* Header with gradient background */}
+              <div className="h-32 bg-gradient-to-r from-teal-500/20 via-indigo-500/20 to-blue-500/20 relative">
+                <motion.button
+                  onClick={() => setSelectedProfile(null)}
+                  className="absolute top-4 right-4 p-2 hover:bg-muted rounded-lg transition-colors z-10"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <X className="h-6 w-6" />
+                </motion.button>
+              </div>
+
+              <div className="px-6 pb-6">
+                {/* Avatar */}
+                <motion.div 
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="flex items-end gap-4 -mt-16 mb-6">
+                  <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-teal-500 to-indigo-600 flex items-center justify-center text-white text-3xl font-bold border-4 border-card shadow-lg">
+                    {selectedProfile.avatar}
+                  </div>
+                  <div className="flex-1 pb-2">
+                    <h1 className="text-2xl font-bold">{selectedProfile.name}</h1>
+                    <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                      <Badge variant="outline">{selectedProfile.department}</Badge>
+                      <span>Sem {selectedProfile.semester}</span>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Stats */}
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.15 }}
+                  className="grid grid-cols-3 gap-4 mb-6">
+                  <div className="rounded-lg bg-primary/10 border border-primary/30 p-4 text-center">
+                    <p className="text-3xl font-bold text-primary">{selectedProfile.activityPoints}</p>
+                    <p className="text-xs text-muted-foreground mt-1">Activity Points</p>
+                  </div>
+                  <div className="rounded-lg bg-primary/10 border border-primary/30 p-4 text-center">
+                    <p className="text-3xl font-bold text-primary">{selectedProfile.pastProjects}</p>
+                    <p className="text-xs text-muted-foreground mt-1">Past Projects</p>
+                  </div>
+                  <div className="rounded-lg bg-primary/10 border border-primary/30 p-4 text-center">
+                    <p className="text-3xl font-bold text-primary">{selectedProfile.connections}</p>
+                    <p className="text-xs text-muted-foreground mt-1">Connections</p>
+                  </div>
+                </motion.div>
+
+                {/* Skills */}
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}>
+                  <h3 className="font-semibold mb-3 flex items-center gap-2">
+                    <Award className="h-5 w-5 text-primary" /> Skills & Expertise
+                  </h3>
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {selectedProfile.skills.map((skill: string) => (
+                      <motion.span
+                        key={skill}
+                        className="px-3 py-1.5 rounded-full bg-gradient-to-r from-teal-500/10 to-indigo-500/10 text-primary text-sm font-medium border border-primary/30"
+                        whileHover={{ scale: 1.1, y: -2 }}
+                      >
+                        {skill}
+                      </motion.span>
+                    ))}
+                  </div>
+                </motion.div>
+
+                {/* Contact Information */}
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.25 }}>
+                  <h3 className="font-semibold mb-3 flex items-center gap-2">
+                    <MessageSquare className="h-5 w-5 text-primary" /> Get in Touch
+                  </h3>
+                  <div className="grid sm:grid-cols-2 gap-3 mb-6">
+                    <motion.a
+                      href={`mailto:${selectedProfile.email}`}
+                      className="flex items-center gap-3 p-4 rounded-lg bg-muted/50 border border-border/50 hover:bg-muted hover:border-primary/50 transition-all"
+                      whileHover={{ x: 4 }}
+                    >
+                      <Mail className="h-5 w-5 text-primary" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs text-muted-foreground">Email</p>
+                        <p className="text-sm font-medium truncate">{selectedProfile.email}</p>
+                      </div>
+                    </motion.a>
+                    <motion.a
+                      href={`tel:${selectedProfile.phone}`}
+                      className="flex items-center gap-3 p-4 rounded-lg bg-muted/50 border border-border/50 hover:bg-muted hover:border-primary/50 transition-all"
+                      whileHover={{ x: 4 }}
+                    >
+                      <Phone className="h-5 w-5 text-primary" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs text-muted-foreground">Phone</p>
+                        <p className="text-sm font-medium truncate">{selectedProfile.phone}</p>
+                      </div>
+                    </motion.a>
+                  </div>
+                </motion.div>
+
+                {/* Social Links */}
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}>
+                  <h3 className="font-semibold mb-3 flex items-center gap-2">
+                    <BookOpen className="h-5 w-5 text-primary" /> Profiles
+                  </h3>
+                  <div className="flex gap-3">
+                    <motion.a
+                      href={selectedProfile.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg gradient-primary text-white font-semibold transition-opacity hover:opacity-90"
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Github className="h-5 w-5" /> GitHub
+                    </motion.a>
+                    <motion.a
+                      href={selectedProfile.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-primary/50 text-primary font-semibold hover:bg-primary/10 transition-all"
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Linkedin className="h-5 w-5" /> LinkedIn
+                    </motion.a>
+                  </div>
+                </motion.div>
+
+                {/* Action Button */}
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.35 }}
+                  className="mt-6 flex gap-3">
+                  <motion.button
+                    onClick={() => {
+                      toast.success(`Connection request sent to ${selectedProfile.name}! 🤝`);
+                      setSelectedProfile(null);
+                    }}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg gradient-primary text-white font-semibold transition-opacity hover:opacity-90"
+                    whileHover={{ scale: 1.02, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <UserPlus className="h-5 w-5" /> Send Connection Request
+                  </motion.button>
+                  <motion.button
+                    onClick={() => setSelectedProfile(null)}
+                    className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-border/50 font-semibold hover:bg-muted transition-colors"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Close
+                  </motion.button>
+                </motion.div>
               </div>
             </motion.div>
           </motion.div>

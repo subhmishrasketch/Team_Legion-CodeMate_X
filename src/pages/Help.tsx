@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 
 const guides = [
-  { icon: FolderPlus, title: "Post a Project", desc: "Go to 'Post Project' from the sidebar. Fill in your idea, select required skills, team size, and deadline. Your project will be visible to all students." },
+  { icon: FolderPlus, title: "Post a Project", desc: "Go to 'Post Project' from the sidebar. Fill in your idea, select required skills, team size, and deadline. Your project will be visible to all students and can be edited or deleted later via My Projects." },
   { icon: Users, title: "Join a Team", desc: "Browse recommended projects on the Dashboard. Click 'Ask to Join' on any project that interests you. The team lead will review your request." },
   { icon: Sparkles, title: "Smart Matching", desc: "Select your skills in Smart Matching to find teammates with complementary abilities. The AI calculates skill overlap and collaboration scores." },
   { icon: RefreshCw, title: "Revival Hub", desc: "Discover abandoned projects that need new teams. Click 'Adopt Idea' to take over and give the project a second chance." },
@@ -42,7 +42,7 @@ const Help = () => {
           <h1 className="font-heading text-3xl font-bold flex items-center gap-2">
             <HelpCircle className="h-7 w-7 text-primary" /> Help & Support
           </h1>
-          <p className="mt-1 text-muted-foreground">Learn how to use CodeMate and report issues.</p>
+          <p className="mt-1 text-muted-foreground">Learn how to use CodeMate and report issues. Need more help? Email <a href="mailto:support@codemate.app" className="text-primary hover:underline">support@codemate.app</a> or join our community chat.</p>
         </div>
 
         {/* How to Use */}

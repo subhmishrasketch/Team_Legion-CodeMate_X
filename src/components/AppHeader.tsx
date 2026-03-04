@@ -1,4 +1,4 @@
-import { Bell, Search, User, LogOut, Settings, X, Sun, Moon } from "lucide-react";
+import { Bell, Search, User, LogOut, Sun, Moon, X } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/contexts/AuthContext";
@@ -54,41 +54,72 @@ export function AppHeader() {
     : [];
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-card px-4">
-      <SidebarTrigger className="text-muted-foreground" />
-      <div className="hidden sm:flex items-center gap-3">
-        <div className="h-8 w-8 rounded-md flex items-center justify-center bg-gradient-to-br from-blue-500 via-purple-500 to-indigo-600 text-white font-bold text-sm shadow-lg shadow-purple-500/50">
+    <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border/50 bg-card/80 backdrop-blur-md px-4 transition-all duration-300">
+      <SidebarTrigger className="text-muted-foreground hover:text-foreground transition-colors" />
+      <motion.div className="hidden sm:flex items-center gap-3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}>
+        <motion.div 
+          whileHover={{ scale: 1.1, rotate: -5 }}
+          whileTap={{ scale: 0.95 }}
+          className="h-8 w-8 rounded-md flex items-center justify-center bg-gradient-to-br from-sky-500 via-purple-500 to-pink-500 text-white font-bold text-sm shadow-lg shadow-purple-500/50 cursor-pointer transition-all"
+        >
           CM
-        </div>
-        <span className="text-sm font-semibold text-foreground">CodeMate</span>
-      </div>
+        </motion.div>
+        <motion.span 
+          className="text-sm font-semibold bg-gradient-to-r from-sky-600 to-purple-600 bg-clip-text text-transparent"
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          CodeMate
+        </motion.span>
+      </motion.div>
 
       {/* Search */}
       <div ref={searchRef} className="relative hidden max-w-md flex-1 sm:block">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => { setSearchQuery(e.target.value); setShowSearch(true); }}
-          onFocus={() => setShowSearch(true)}
-          placeholder="Search projects, skills, students..."
-          className="h-9 w-full rounded-lg border border-border bg-muted/50 pl-9 pr-8 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary"
-        />
-        {searchQuery && (
-          <button onClick={() => { setSearchQuery(""); setShowSearch(false); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-            <X className="h-3.5 w-3.5" />
-          </button>
-        )}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="relative w-full">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+          <motion.input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => { setSearchQuery(e.target.value); setShowSearch(true); }}
+            onFocus={() => setShowSearch(true)}
+            placeholder="Search projects, skills, students..."
+            className="h-9 w-full rounded-xl border border-border/50 bg-muted/30 backdrop-blur-sm pl-9 pr-8 text-sm outline-none transition-all placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 hover:bg-muted/50"
+            whileFocus={{ scale: 1.02 }}
+          />
+          <AnimatePresence>
+            {searchQuery && (
+              <motion.button 
+                onClick={() => { setSearchQuery(""); setShowSearch(false); }} 
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+              >
+                <X className="h-3.5 w-3.5" />
+              </motion.button>
+            )}
+          </AnimatePresence>
+        </motion.div>
         <AnimatePresence>
           {showSearch && searchResults.length > 0 && (
-            <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
-              className="absolute left-0 top-11 w-full rounded-xl border border-border bg-card shadow-xl z-50">
+            <motion.div 
+              initial={{ opacity: 0, y: -8, scale: 0.95 }} 
+              animate={{ opacity: 1, y: 0, scale: 1 }} 
+              exit={{ opacity: 0, y: -8, scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="absolute left-0 top-11 w-full rounded-xl border border-border/50 bg-card/95 backdrop-blur-md shadow-2xl z-50 overflow-hidden"
+            >
               {searchResults.map((r, i) => (
-                <button key={i} onClick={() => { navigate(r.path); setSearchQuery(""); setShowSearch(false); }}
-                  className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-left hover:bg-muted/50 transition-colors first:rounded-t-xl last:rounded-b-xl">
+                <motion.button 
+                  key={i} 
+                  onClick={() => { navigate(r.path); setSearchQuery(""); setShowSearch(false); }}
+                  className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-left hover:bg-primary/5 transition-colors"
+                  whileHover={{ x: 4 }}
+                >
                   <Search className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                   <span>{r.label}</span>
-                </button>
+                </motion.button>
               ))}
             </motion.div>
           )}
@@ -99,73 +130,134 @@ export function AppHeader() {
 
       <div className="flex items-center gap-2 ml-auto">
         {/* Mobile search */}
-        <button className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground sm:hidden hover:bg-muted"
-          onClick={() => { /* Could expand mobile search */ }}>
+        <motion.button 
+          className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground sm:hidden hover:bg-primary/10 hover:text-primary transition-colors"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => { /* Could expand mobile search */ }}
+        >
           <Search className="h-5 w-5" />
-        </button>
+        </motion.button>
 
         {/* Notifications */}
         <div ref={notifRef} className="relative">
-          <button onClick={() => setShowNotifs(!showNotifs)}
-            className="relative flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+          <motion.button 
+            onClick={() => setShowNotifs(!showNotifs)}
+            className="relative flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-all hover:bg-primary/10 hover:text-primary"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+          >
             <Bell className="h-5 w-5" />
-            {unreadCount > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
-                {unreadCount}
-              </span>
-            )}
-          </button>
+            <AnimatePresence>
+              {unreadCount > 0 && (
+                <motion.span 
+                  className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 to-red-500 px-1 text-[10px] font-bold text-white shadow-lg shadow-pink-500/50 animate-pulse-soft"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  exit={{ scale: 0 }}
+                >
+                  {unreadCount}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.button>
           <AnimatePresence>
             {showNotifs && (
-              <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-                className="absolute right-0 top-11 w-80 rounded-xl border border-border bg-card p-0 shadow-xl z-50">
-                <div className="flex items-center justify-between border-b border-border px-4 py-3">
+              <motion.div 
+                initial={{ opacity: 0, y: -12, scale: 0.92 }} 
+                animate={{ opacity: 1, y: 0, scale: 1 }} 
+                exit={{ opacity: 0, y: -12, scale: 0.92 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                className="absolute right-0 top-11 w-80 rounded-xl border border-border/50 bg-card/95 backdrop-blur-md p-0 shadow-2xl z-50 overflow-hidden"
+              >
+                <div className="flex items-center justify-between border-b border-border/50 px-4 py-3 bg-gradient-to-r from-primary/5 to-secondary/5">
                   <h3 className="font-heading text-sm font-semibold">Notifications</h3>
-                  <button onClick={markAllRead} className="text-xs text-primary hover:underline">Mark all read</button>
+                  <motion.button 
+                    onClick={markAllRead} 
+                    className="text-xs text-primary hover:underline transition-colors"
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    Mark all read
+                  </motion.button>
                 </div>
                 <div className="max-h-72 overflow-y-auto">
                   {notifications.length === 0 ? (
-                    <p className="p-4 text-center text-sm text-muted-foreground">No notifications yet</p>
-                  ) : notifications.slice(0, 8).map((n) => (
-                    <button key={n.id} onClick={() => markAsRead(n.id)}
-                      className={`flex w-full flex-col gap-0.5 px-4 py-3 text-left transition-colors hover:bg-muted/50 ${!n.read ? "bg-primary/5" : ""}`}>
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-4 text-center text-sm text-muted-foreground">
+                      No notifications yet
+                    </motion.div>
+                  ) : notifications.slice(0, 8).map((n, idx) => (
+                    <motion.button 
+                      key={n.id} 
+                      onClick={() => markAsRead(n.id)}
+                      className={`flex w-full flex-col gap-0.5 px-4 py-3 text-left transition-all hover:bg-primary/5 ${!n.read ? "bg-primary/5 border-l-2 border-primary" : ""}`}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.05 }}
+                      whileHover={{ x: 4 }}
+                    >
                       <span className="text-sm font-medium">{n.title}</span>
                       <span className="text-xs text-muted-foreground">{n.message}</span>
                       <span className="text-[10px] text-muted-foreground">{n.time}</span>
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
-                <button onClick={() => { navigate("/notifications"); setShowNotifs(false); }}
-                  className="w-full border-t border-border py-2.5 text-center text-xs font-medium text-primary hover:bg-muted/30">
+                <motion.button 
+                  onClick={() => { navigate("/notifications"); setShowNotifs(false); }}
+                  className="w-full border-t border-border/50 py-2.5 text-center text-xs font-medium text-primary hover:bg-primary/5 transition-colors"
+                  whileHover={{ backgroundColor: "var(--primary-light)" }}
+                >
                   View all notifications
-                </button>
+                </motion.button>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
 
         {/* Theme switch */}
-        <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted transition-colors">
-          {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-        </button>
+        <motion.button 
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors"
+          whileHover={{ scale: 1.1, rotate: 20 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <AnimatePresence mode="wait">
+            {theme === "dark" ? (
+              <motion.div key="sun" initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }}>
+                <Sun className="h-5 w-5" />
+              </motion.div>
+            ) : (
+              <motion.div key="moon" initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }}>
+                <Moon className="h-5 w-5" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.button>
 
         {/* Profile */}
         <div ref={profileRef} className="relative">
-          <button onClick={() => setShowProfile(!showProfile)}>
-            <Avatar className="h-8 w-8 cursor-pointer ring-2 ring-primary/20 hover:ring-primary/50 transition-all">
-              <AvatarFallback className="gradient-primary text-xs font-bold text-primary-foreground">
+          <motion.button 
+            onClick={() => setShowProfile(!showProfile)}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Avatar className="h-8 w-8 cursor-pointer ring-2 ring-primary/20 hover:ring-primary/50 transition-all shadow-lg">
+              <AvatarFallback className="bg-gradient-to-br from-sky-500 to-purple-500 text-xs font-bold text-white">
                 {user?.initials || "?"}
               </AvatarFallback>
             </Avatar>
-          </button>
+          </motion.button>
           <AnimatePresence>
             {showProfile && (
-              <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-                className="absolute right-0 top-11 w-64 rounded-xl border border-border bg-card shadow-xl z-50">
-                <div className="flex items-center gap-3 border-b border-border px-4 py-3">
-                  <Avatar className="h-10 w-10">
-                    <AvatarFallback className="gradient-primary text-sm font-bold text-primary-foreground">{user?.initials}</AvatarFallback>
+              <motion.div 
+                initial={{ opacity: 0, y: -12, scale: 0.92 }} 
+                animate={{ opacity: 1, y: 0, scale: 1 }} 
+                exit={{ opacity: 0, y: -12, scale: 0.92 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                className="absolute right-0 top-11 w-64 rounded-xl border border-border/50 bg-card/95 backdrop-blur-md shadow-2xl z-50 overflow-hidden"
+              >
+                <div className="flex items-center gap-3 border-b border-border/50 px-4 py-3 bg-gradient-to-r from-primary/5 to-secondary/5">
+                  <Avatar className="h-10 w-10 ring-2 ring-primary/30">
+                    <AvatarFallback className="bg-gradient-to-br from-sky-500 to-purple-500 text-sm font-bold text-white">{user?.initials}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold truncate">{user?.name}</p>
@@ -174,28 +266,39 @@ export function AppHeader() {
                   </div>
                 </div>
                 {user?.skills && user.skills.length > 0 && (
-                  <div className="border-b border-border px-4 py-2">
+                  <div className="border-b border-border/50 px-4 py-2">
                     <p className="text-[10px] font-semibold text-muted-foreground uppercase mb-1">Skills</p>
                     <div className="flex flex-wrap gap-1">
-                      {user.skills.map((s) => (
-                        <span key={s} className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">{s}</span>
+                      {user.skills.map((s, idx) => (
+                        <motion.span 
+                          key={s} 
+                          className="rounded-full bg-gradient-to-r from-primary/20 to-secondary/20 px-2 py-0.5 text-[10px] font-medium text-primary border border-primary/30"
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: idx * 0.05 }}
+                          whileHover={{ scale: 1.05 }}
+                        >
+                          {s}
+                        </motion.span>
                       ))}
                     </div>
                   </div>
                 )}
-                <div className="p-1.5">
-                  <button onClick={() => { navigate("/profile"); setShowProfile(false); }}
-                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground transition-colors hover:bg-muted">
+                <div className="p-1.5 space-y-1">
+                  <motion.button 
+                    onClick={() => { navigate("/profile"); setShowProfile(false); }}
+                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground transition-all hover:bg-primary/10"
+                    whileHover={{ x: 4 }}
+                  >
                     <User className="h-4 w-4" /> View Profile
-                  </button>
-                  <button onClick={() => { navigate("/profile"); setShowProfile(false); }}
-                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground transition-colors hover:bg-muted">
-                    <Settings className="h-4 w-4" /> Settings
-                  </button>
-                  <button onClick={logout}
-                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-destructive transition-colors hover:bg-destructive/10">
+                  </motion.button>
+                  <motion.button 
+                    onClick={logout}
+                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-destructive transition-all hover:bg-destructive/10"
+                    whileHover={{ x: 4 }}
+                  >
                     <LogOut className="h-4 w-4" /> Sign Out
-                  </button>
+                  </motion.button>
                 </div>
               </motion.div>
             )}

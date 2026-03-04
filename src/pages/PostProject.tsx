@@ -2,6 +2,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
 const ALL_SKILLS = [
@@ -14,12 +15,15 @@ const TEAM_SIZES = ["2 members", "3 members", "4 members", "5 members", "6+ memb
 
 const PostProject = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [teamSize, setTeamSize] = useState("");
   const [deadline, setDeadline] = useState("");
   const [pitchVideo, setPitchVideo] = useState("");
+  const [githubLink, setGithubLink] = useState("");
+  const [budget, setBudget] = useState("");
 
   const toggleSkill = (skill: string) => {
     setSelectedSkills((prev) =>
@@ -33,8 +37,44 @@ const PostProject = () => {
       toast.error("Please fill in all required fields");
       return;
     }
-    toast.success("Project posted successfully! 🎉");
-    navigate("/my-projects");
+
+    try {
+      const newProject = {
+        title,
+        desc: description,
+        tags: selectedSkills,
+        members: "1/" + teamSize.split(" ")[0],
+        deadline,
+        match: 100,
+        author: user?.name || "Anonymous",
+        authorEmail: user?.email || "",
+        authorPhone: user?.phone || "",
+        urgent: false,
+        details: {
+          technologies: selectedSkills.join(", "),
+          budget: budget || "Not specified",
+          difficulty: "Medium",
+          estimatedHours: "250 hours",
+          description,
+        },
+        postedBy: user?.email,
+        postedAt: new Date().toISOString(),
+        github: githubLink,
+        status: "In Progress",
+        role: "Project Owner"
+      };
+
+      const key = "postedProjects";
+      const existing = localStorage.getItem(key);
+      const projects = existing ? JSON.parse(existing) : [];
+      projects.push(newProject);
+      localStorage.setItem(key, JSON.stringify(projects));
+
+      toast.success("Project posted successfully! 🎉");
+      navigate("/my-projects");
+    } catch (err) {
+      toast.error("Failed to post project");
+    }
   };
 
   return (
@@ -93,6 +133,22 @@ const PostProject = () => {
               <label className="mb-1.5 block text-sm font-semibold">Deadline</label>
               <input type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)}
                 className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary" />
+            </div>
+          </div>
+
+          {/* Budget & GitHub */}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="mb-1.5 block text-sm font-semibold">Budget (optional)</label>
+              <input type="text" value={budget} onChange={(e) => setBudget(e.target.value)}
+                placeholder="e.g., ₹50,000"
+                className="h-11 w-full rounded-lg border border-border bg-background px-4 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary" />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-sm font-semibold">GitHub Link (optional)</label>
+              <input type="url" value={githubLink} onChange={(e) => setGithubLink(e.target.value)}
+                placeholder="https://github.com/..."
+                className="h-11 w-full rounded-lg border border-border bg-background px-4 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary" />
             </div>
           </div>
 

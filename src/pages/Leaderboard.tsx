@@ -1,5 +1,5 @@
 import { DashboardLayout } from "@/components/DashboardLayout";
-import { Trophy, Mail, Phone, X, Zap, Target, CheckCircle2 } from "lucide-react";
+import { Trophy, Mail, Phone, X, Zap, Target, CheckCircle2, Github } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -8,13 +8,13 @@ import { Badge } from "@/components/ui/badge";
 interface Student {
   name: string; initials: string; dept: string;
   basePoints?: number; events?: number; completedProjects?: number;
-  semester?: number; skills?: string[]; email?: string; phone?: string; projects?: number;
+  semester?: number; skills?: string[]; email?: string; phone?: string; projects?: number; github?: string;
 }
 
 const seed: Student[] = [
-  { name: "Priya Sharma", initials: "PS", dept: "CSE", basePoints: 200, events: 10, completedProjects: 42, semester: 6, skills: ["React", "Python", "TensorFlow", "ML/AI"], email: "priya@college.edu", phone: "+91 99887 11223", projects: 8 },
-  { name: "Rahul Mehta", initials: "RM", dept: "IT", basePoints: 150, events: 20, completedProjects: 15, semester: 7, skills: ["Node.js", "React", "MongoDB"], email: "rahul@college.edu", phone: "+91 98765 44332", projects: 6 },
-  { name: "Sneha Kulkarni", initials: "SK", dept: "ECE", basePoints: 120, events: 5, completedProjects: 40, semester: 6, skills: ["Python", "TensorFlow", "Docker"], email: "sneha@college.edu", phone: "+91 55443 22110", projects: 5 },
+  { name: "Priya Sharma", initials: "PS", dept: "CSE", basePoints: 200, events: 10, completedProjects: 42, semester: 6, skills: ["React", "Python", "TensorFlow", "ML/AI"], email: "priya@college.edu", phone: "+91 99887 11223", projects: 8, github: "https://github.com/priyasharma" },
+  { name: "Rahul Mehta", initials: "RM", dept: "IT", basePoints: 150, events: 20, completedProjects: 15, semester: 7, skills: ["Node.js", "React", "MongoDB"], email: "rahul@college.edu", phone: "+91 98765 44332", projects: 6, github: "https://github.com/rahulmehta" },
+  { name: "Sneha Kulkarni", initials: "SK", dept: "ECE", basePoints: 120, events: 5, completedProjects: 40, semester: 6, skills: ["Python", "TensorFlow", "Docker"], email: "sneha@college.edu", phone: "+91 55443 22110", projects: 5, github: "https://github.com/snehakulkarni" },
   { name: "Amit Desai", initials: "AD", dept: "CSE", basePoints: 90, events: 8, completedProjects: 30, projects: 5, semester: 5, skills: ["React", "Node.js", "TypeScript"], email: "amit@college.edu", phone: "+91 88776 12345" },
   { name: "Neha Rao", initials: "NR", dept: "ME", basePoints: 80, events: 12, completedProjects: 24, projects: 6, semester: 7, skills: ["Python", "IoT", "Docker"], email: "neha@college.edu", phone: "+91 91234 56789" },
   { name: "Vikram Patel", initials: "VP", dept: "CSE", basePoints: 70, events: 6, completedProjects: 25, projects: 4, semester: 6, skills: ["React", "TypeScript", "AWS"], email: "vikram@college.edu", phone: "+91 88776 55443" },
@@ -216,6 +216,18 @@ const Leaderboard = () => {
                   {selectedStudent.phone && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Phone className="h-4 w-4 shrink-0" /> {selectedStudent.phone}
+                    </div>
+                  )}
+                  {selectedStudent.github && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <a
+                        href={selectedStudent.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-primary hover:underline"
+                      >
+                        <Github className="h-5 w-5" /> GitHub
+                      </a>
                     </div>
                   )}
                 </div>

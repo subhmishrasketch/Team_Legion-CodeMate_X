@@ -36,6 +36,11 @@ export default defineConfig(({ mode }) => ({
         start_url: "/",
         icons: [
           {
+            src: "icons/animated-icon.svg",
+            sizes: "100x100",
+            type: "image/svg+xml"
+          },
+          {
             src: "favicon.svg",
             sizes: "any",
             type: "image/svg+xml"

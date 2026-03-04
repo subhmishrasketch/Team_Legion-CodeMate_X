@@ -12,6 +12,15 @@ const Signup = () => {
   const navigate = useNavigate();
   const [role, setRole] = useState<"student" | "admin">("student");
 
+  const formVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { staggerChildren: 0.08 } },
+  };
+  const fieldVariants = {
+    hidden: { opacity: 0, x: -10 },
+    visible: { opacity: 1, x: 0 },
+  };
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -41,20 +50,35 @@ const Signup = () => {
 
   return (
     <div className="flex min-h-screen">
-      {/* left branding similar to Login */}
-      <div className="relative hidden flex-1 items-center justify-center gradient-login lg:flex">
-        <div className="absolute -top-20 -left-20 h-72 w-72 rounded-full bg-primary/30 animate-float blur-3xl" />
-        <div className="absolute bottom-10 right-[-60px] h-96 w-96 rounded-full bg-secondary/20 animate-float" />
+      {/* left branding with animated blobs (same as Login) */}
+      <div className="relative hidden flex-1 items-center justify-center overflow-hidden lg:flex">
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <motion.div
+            className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-gradient-to-br from-teal-500/20 to-indigo-500/20 blur-3xl"
+            animate={{ x: [0, 40, 0], y: [0, -30, 0] }}
+            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-gradient-to-tl from-indigo-500/20 to-blue-500/20 blur-3xl"
+            animate={{ x: [0, -40, 0], y: [0, 30, 0] }}
+            transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute top-1/2 left-1/2 w-80 h-80 rounded-full bg-gradient-to-br from-blue-500/10 to-teal-500/10 blur-3xl -translate-x-1/2 -translate-y-1/2"
+            animate={{ scale: [1, 1.2, 1], rotate: [0, 180, 360] }}
+            transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </div>
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3 }}
-          className="relative z-10 flex flex-col items-center text-center px-8 max-w-xs"
+          className="relative z-10 flex flex-col items-center text-center px-8"
         >
           <img
             src={codemateLogo}
             alt="CodeMate"
-            className="mb-6 max-h-48 max-w-[90%] rounded-2xl object-contain shadow-2xl animate-glow mx-auto"
+            className="mb-6 max-h-28 max-w-28 rounded-2xl object-contain shadow-2xl animate-glow"
           />
           <h1 className="mb-2 font-heading text-4xl font-bold text-primary-foreground text-gradient">
             Join CodeMate
@@ -65,16 +89,16 @@ const Signup = () => {
         </motion.div>
       </div>
 
-      <div className="flex flex-1 items-center justify-center bg-background p-8 relative">
+      <div className="flex flex-1 items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-8 relative">
         {/* theme toggle */}
         <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted transition-colors">
           {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </button>
         <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6 }}
+          initial="hidden"
+          animate="visible"
+          variants={formVariants}
           className="w-full max-w-md bg-card/90 backdrop-blur-md rounded-2xl p-10 shadow-2xl"
         >
           <h2 className="mb-2 font-heading text-3xl font-bold text-gradient">
@@ -119,8 +143,8 @@ const Signup = () => {
             ))}
           </div>
 
-          <form onSubmit={handleSignup} className="space-y-5">
-            <div>
+          <motion.form onSubmit={handleSignup} className="space-y-5" variants={formVariants}>
+            <motion.div variants={fieldVariants}>
               <label className="mb-1.5 block text-sm font-medium">Full Name</label>
               <div className="relative">
                 <UserIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -130,10 +154,10 @@ const Signup = () => {
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Jane Doe"
                   disabled={demoMode}
-                  className="h-11 w-full rounded-lg border border-border bg-card pl-10 pr-4 text-sm outline-none transition-all focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="h-11 w-full rounded-lg border border-border bg-card pl-10 pr-4 text-sm outline-none transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:scale-105"
                 />
               </div>
-            </div>
+            </motion.div>
             <div>
               <label className="mb-1.5 block text-sm font-medium">College Email</label>
               <div className="relative">
@@ -233,13 +257,15 @@ const Signup = () => {
                 />
               </div>
             </div>
-            <button
+            <motion.button
               type="submit"
-              className="h-11 w-full rounded-lg font-semibold text-primary-foreground gradient-cta transition-transform hover:scale-105"
+              className="h-11 w-full rounded-lg font-semibold text-primary-foreground gradient-cta bg-gradient-anim transition-transform hover:scale-105"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               Create Account
-            </button>
-          </form>
+            </motion.button>
+          </motion.form>
 
           <p className="mt-6 text-center text-sm text-muted-foreground">
             Already have one?{' '}
