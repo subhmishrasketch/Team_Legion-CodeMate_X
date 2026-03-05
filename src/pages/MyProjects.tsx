@@ -1,5 +1,5 @@
 import { DashboardLayout } from "@/components/DashboardLayout";
-import { FolderOpen, Users, Clock, Plus, Copy, Trash2, X, Share2, UserX, Info, Check, User as UserIcon, Mail, Phone, Github, Linkedin, ThumbsUp, ThumbsDown, Eye } from "lucide-react";
+import { FolderOpen, Users, Clock, Plus, Copy, Trash2, X, Share2, UserX, Info, Check, User as UserIcon, Mail, Phone, Github, Linkedin, ThumbsUp, ThumbsDown, UserPlus, Search, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { motion, AnimatePresence } from "framer-motion";
@@ -20,6 +20,26 @@ interface JoinRequest {
   requestedDate: string;
 }
 
+// Mock user database for inviting
+const allUsers = [
+  { name: "Priya Sharma", email: "priya@college.edu", department: "CSE", skills: ["React", "Python", "TensorFlow"], avatar: "P" },
+  { name: "Rahul Mehta", email: "rahul@college.edu", department: "CSE", skills: ["React", "Node.js", "IoT"], avatar: "R" },
+  { name: "Neha Rao", email: "neha@college.edu", department: "IT", skills: ["Python", "OpenCV", "Flask"], avatar: "N" },
+  { name: "Vikram Patel", email: "vikram@college.edu", department: "CSE", skills: ["React Native", "Node.js", "MongoDB"], avatar: "V" },
+  { name: "Ananya Iyer", email: "ananya@college.edu", department: "IT", skills: ["TypeScript", "PostgreSQL", "React"], avatar: "A" },
+  { name: "Rohan Gupta", email: "rohan@college.edu", department: "CSE", skills: ["React", "Node.js", "Docker"], avatar: "R" },
+  { name: "Karan Singh", email: "karan@college.edu", department: "IT", skills: ["JavaScript", "Vue.js", "Firebase"], avatar: "K" },
+  { name: "Maya Krishnan", email: "maya@college.edu", department: "CSE", skills: ["C++", "Data Structures", "Algorithms"], avatar: "M" },
+  { name: "Arjun Reddy", email: "arjun@college.edu", department: "IT", skills: ["PHP", "MySQL", "Laravel"], avatar: "A" },
+  { name: "Sneha Patel", email: "sneha@college.edu", department: "CSE", skills: ["Java", "Spring Boot", "Microservices"], avatar: "S" },
+  { name: "Divya Sharma", email: "divya@college.edu", department: "IT", skills: ["Python", "Django", "PostgreSQL", "AWS"], avatar: "D" },
+  { name: "Amit Kumar", email: "amit@college.edu", department: "CSE", skills: ["React", "Redux", "TypeScript", "Testing"], avatar: "A" },
+  { name: "Isha Verma", email: "isha@college.edu", department: "IT", skills: ["Full Stack", "MERN", "MongoDB", "GraphQL"], avatar: "I" },
+  { name: "Nitin Desai", email: "nitin@college.edu", department: "CSE", skills: ["Android", "Kotlin", "Firebase", "REST APIs"], avatar: "N" },
+  { name: "Pooja Singh", email: "pooja@college.edu", department: "IT", skills: ["UI/UX Design", "Figma", "CSS", "React"], avatar: "P" },
+  { name: "Sanjay Kumar", email: "sanjay@college.edu", department: "CSE", skills: ["Machine Learning", "Python", "TensorFlow", "Data Analysis"], avatar: "S" },
+];
+
 const MyProjects = () => {
   const navigate = useNavigate();
   const { user, demoMode } = useAuth();
@@ -31,6 +51,9 @@ const MyProjects = () => {
   const [selectedProfile, setSelectedProfile] = useState<any>(null);
   const [modalMode, setModalMode] = useState<"manage" | "details" | "profile" | null>(null);
   const [appliedProjects, setAppliedProjects] = useState<string[]>([]);
+  const [inviteSearch, setInviteSearch] = useState("");
+  const [showInviteSection, setShowInviteSection] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Load posted projects from localStorage
@@ -71,46 +94,6 @@ const MyProjects = () => {
             acceptedMembers: [],
             tags: ["React", "Python", "AI"],
             deadline: "Mar 15, 2026"
-          },
-          {
-            title: "Green Energy Dashboard",
-            desc: "Real-time monitoring dashboard for campus solar panels.",
-            owner: { name: user?.name || "Demo User", email: user?.email || "demo@college.edu" },
-            joinRequests: [
-              {
-                name: "Neha Rao",
-                email: "neha@college.edu",
-                phone: "+91 91234 56789",
-                department: "IT",
-                skills: ["Python", "OpenCV", "Flask"],
-                github: "https://github.com/neha",
-                linkedin: "https://linkedin.com/in/neha",
-                requestedDate: new Date().toLocaleString()
-              }
-            ],
-            acceptedMembers: [],
-            tags: ["React", "IoT"],
-            deadline: "Apr 01, 2026"
-          },
-          {
-            title: "Smart Attendance System",
-            desc: "Face recognition based attendance system for lecture halls.",
-            owner: { name: user?.name || "Demo User", email: user?.email || "demo@college.edu" },
-            joinRequests: [],
-            acceptedMembers: [
-              {
-                name: "Vikram Patel",
-                email: "vikram@college.edu",
-                phone: "+91 88776 55443",
-                department: "CSE",
-                skills: ["React Native", "Node.js"],
-                github: "https://github.com/vikram",
-                linkedin: "https://linkedin.com/in/vikram",
-                requestedDate: new Date().toLocaleString()
-              }
-            ],
-            tags: ["Python", "OpenCV"],
-            deadline: "Mar 28, 2026"
           }
         ];
         postedProjects = sampleProjects;
@@ -118,7 +101,8 @@ const MyProjects = () => {
       }
       
       // Categorize projects for current user
-      const myPosted = postedProjects.filter((p: any) => p.owner?.email === user?.email);
+      // If no projects match the current user, show all sample projects
+      const myPosted = postedProjects.filter((p:  any) => p.owner?.email === user?.email);
       const joined = postedProjects.filter((p: any) => 
         p.acceptedMembers?.some((m: any) => m.email === user?.email)
       );
@@ -128,12 +112,15 @@ const MyProjects = () => {
         !p.joinRequests?.some((r: any) => r.email === user?.email)
       );
       
-      setMyPostedProjects(myPosted);
+      // If user has no posted projects yet, show all projects as examples
+      setMyPostedProjects(myPosted.length > 0 ? myPosted : postedProjects);
       setJoinedProjects(joined);
-      setRecommendedProjects(recommended);
+      setRecommendedProjects(recommended.length > 0 ? recommended : []);
       setAllProjects([...postedProjects, ...defaultProjects]);
+      setIsLoading(false);
     } catch (err) {
       console.error("Error loading projects:", err);
+      setIsLoading(false);
     }
 
     // Load user's applications (legacy)
@@ -309,12 +296,58 @@ const MyProjects = () => {
     }
   };
 
+  const inviteMember = (member: any) => {
+    // when we "invite" a user we now add them straight into the project
+    // rather than creating a pending request.  this mirrors the logic from
+    // acceptJoinRequest but without the notification step.
+    if (!selectedProject) return;
+
+    try {
+      const postedKey = "postedProjects";
+      const posted = localStorage.getItem(postedKey);
+      const postedProjects = posted ? JSON.parse(posted) : [];
+
+      const updateIdx = postedProjects.findIndex((p: any) => p.title === selectedProject.title);
+      if (updateIdx >= 0) {
+        const alreadyMember = selectedProject.acceptedMembers?.some((m: any) => m.email === member.email);
+        if (alreadyMember) {
+          toast.error(`${member.name} is already a member`);
+          return;
+        }
+
+        // ensure acceptedMembers array exists
+        if (!postedProjects[updateIdx].acceptedMembers) {
+          postedProjects[updateIdx].acceptedMembers = [];
+        }
+
+        // push the new member object (same shape as JoinRequest)
+        postedProjects[updateIdx].acceptedMembers.push({
+          name: member.name,
+          email: member.email,
+          department: member.department,
+          skills: member.skills,
+          requestedDate: new Date().toLocaleString(),
+        });
+
+        // remove from joinRequests if somehow they were there
+        postedProjects[updateIdx].joinRequests = postedProjects[updateIdx].joinRequests?.filter((r: any) => r.email !== member.email) || [];
+
+        localStorage.setItem(postedKey, JSON.stringify(postedProjects));
+        setSelectedProject(postedProjects[updateIdx]);
+        toast.success(`${member.name} has been added to the project`);
+      }
+    } catch (err) {
+      console.error("Error adding member:", err);
+      toast.error("Failed to add member");
+    }
+  };
+
   return (
     <DashboardLayout>
-      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="space-y-8 w-full">
         {/* Header */}
-        <div className="flex items-center justify-between flex-col sm:flex-row">
-          <div>
+        <div className="flex items-center justify-between flex-col sm:flex-row gap-4">
+          <div className="flex-1">
             <h1 className="font-heading text-3xl font-bold flex items-center gap-2">
               <FolderOpen className="h-7 w-7 text-primary" /> My Projects
             </h1>
@@ -322,7 +355,7 @@ const MyProjects = () => {
           </div>
           <motion.button 
             onClick={() => navigate("/post-project")}
-            className="flex items-center gap-2 rounded-lg gradient-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+            className="flex items-center gap-2 rounded-lg gradient-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 whitespace-nowrap"
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -356,7 +389,7 @@ const MyProjects = () => {
                       <motion.button onClick={() => { setSelectedProject(p); setModalMode("details"); }} className="flex items-center gap-1 rounded-lg border border-border/50 px-3 py-2 text-xs font-medium hover:bg-primary/10" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                         <Eye className="h-3.5 w-3.5" /> Open
                       </motion.button>
-                      <motion.button onClick={() => { setSelectedProject(p); setModalMode("manage"); }} className="flex items-center gap-1 rounded-lg border border-border/50 px-3 py-2 text-xs font-medium hover:bg-primary/10" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <motion.button onClick={() => { setSelectedProject(p); setModalMode("manage"); setInviteSearch(""); setShowInviteSection(false); }} className="flex items-center gap-1 rounded-lg border border-border/50 px-3 py-2 text-xs font-medium hover:bg-primary/10" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                         <Users className="h-3.5 w-3.5" /> Manage
                       </motion.button>
                     </div>
@@ -619,7 +652,10 @@ const MyProjects = () => {
                       {selectedProject.joinRequests.map((request: JoinRequest, idx: number) => (
                         <motion.div key={`request-${idx}`} className="flex items-center justify-between rounded-lg bg-muted/50 p-4 border border-border/50" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.1 }}>
                           <div className="flex-1 min-w-0">
-                            <p className="font-semibold">{request.name}</p>
+                            <div className="flex items-center gap-2 mb-1">
+                              <p className="font-semibold">{request.name}</p>
+                              {request.invited && <span className="text-xs bg-blue-500/20 text-blue-600 px-2 py-0.5 rounded">Invited</span>}
+                            </div>
                             <p className="text-xs text-muted-foreground">{request.email} • {request.department}</p>
                             {request.skills && request.skills.length > 0 && (
                               <div className="flex gap-1 mt-2 flex-wrap">
@@ -668,6 +704,110 @@ const MyProjects = () => {
                   </div>
                 )}
 
+                {/* Invite Members */}
+                <div className="border-t border-border/50 pt-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-sm font-semibold text-muted-foreground uppercase">Invite Team Members</h3>
+                    <motion.button 
+                      onClick={() => setShowInviteSection(!showInviteSection)}
+                      className="flex items-center gap-2 text-xs font-medium text-primary hover:text-primary/80"
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      <UserPlus className="h-3.5 w-3.5" />
+                      {showInviteSection ? 'Hide' : 'Show'} Available Members
+                    </motion.button>
+                  </div>
+
+                  {showInviteSection && (
+                    <motion.div 
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="space-y-4"
+                    >
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <input
+                          type="text"
+                          value={inviteSearch}
+                          onChange={(e) => setInviteSearch(e.target.value)}
+                          placeholder="🔍 Search by name, email, or skills (e.g., Priya, React)..."
+                          className="w-full pl-9 pr-4 py-2.5 text-sm rounded-lg border border-primary/30 bg-primary/5 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                        />
+                      </div>
+
+                      <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 text-xs text-blue-700 dark:text-blue-300">
+                        <strong>✨ How to search:</strong> Type any member's name (e.g., "Priya", "Rahul"), email, or skills (e.g., "React", "Python") to find and add them
+                      </div>
+
+                      <div className="max-h-96 overflow-y-auto space-y-2 border border-border/50 rounded-lg p-3 bg-muted/20">
+                        {allUsers
+                          .filter(member => 
+                            member.email !== user?.email && // Don't show current user
+                            !selectedProject.acceptedMembers?.some((m: any) => m.email === member.email) && // Not already a member
+                            !selectedProject.joinRequests?.some((r: any) => r.email === member.email) && // Not already invited/applied
+                            (inviteSearch === '' || 
+                             member.name.toLowerCase().includes(inviteSearch.toLowerCase()) ||
+                             member.email.toLowerCase().includes(inviteSearch.toLowerCase()) ||
+                             member.skills.some(skill => skill.toLowerCase().includes(inviteSearch.toLowerCase())))
+                          )
+                          .slice(0, 10)
+                          .map((member, idx) => (
+                            <motion.div 
+                              key={member.email}
+                              className="flex items-center justify-between rounded-lg bg-white dark:bg-slate-800 border border-border/50 hover:border-primary/50 p-4 transition-all hover:shadow-md"
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: idx * 0.05 }}
+                            >
+                              <div className="flex-1 min-w-0 flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary via-secondary to-accent flex items-center justify-center text-sm font-bold text-white shrink-0 shadow-md">
+                                  {member.avatar}
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <p className="font-bold text-sm text-foreground">{member.name}</p>
+                                  <p className="text-xs text-muted-foreground">{member.email}</p>
+                                  <p className="text-xs text-muted-foreground font-medium">{member.department}</p>
+                                  <div className="flex gap-1 mt-1 flex-wrap">
+                                    {member.skills.slice(0, 3).map(skill => (
+                                      <span key={skill} className="text-xs bg-primary/15 text-primary px-2 py-1 rounded font-medium">
+                                        {skill}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                              <motion.button 
+                                onClick={() => inviteMember(member)}
+                                className="ml-3 flex items-center gap-1.5 px-4 py-2 text-xs font-semibold bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all whitespace-nowrap shadow-sm"
+                                whileHover={{ scale: 1.08 }}
+                                whileTap={{ scale: 0.95 }}
+                                title={`Invite ${member.name} to this project`}
+                              >
+                                <UserPlus className="h-4 w-4" />
+                                Add
+                              </motion.button>
+                            </motion.div>
+                          ))}
+                      </div>
+
+                      {inviteSearch && allUsers.filter(user => 
+                        user.email !== user?.email &&
+                        !selectedProject.acceptedMembers?.some((m: any) => m.email === user.email) &&
+                        !selectedProject.joinRequests?.some((r: any) => r.email === user.email) &&
+                        (user.name.toLowerCase().includes(inviteSearch.toLowerCase()) ||
+                         user.email.toLowerCase().includes(inviteSearch.toLowerCase()) ||
+                         user.skills.some(skill => skill.toLowerCase().includes(inviteSearch.toLowerCase())))
+                      ).length === 0 && (
+                        <div className="text-center py-6 text-muted-foreground text-sm">
+                          <p>😔 No members found for "{inviteSearch}"</p>
+                          <p className="text-xs mt-1">Try searching with a name (e.g., Priya), email, or skill (e.g., React)</p>
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+                </div>
+
                 {/* Delete */}
                 <div className="border-t border-border/50 pt-6">
                   <motion.button onClick={() => deleteProject(selectedProject.title)} className="w-full flex items-center justify-center gap-2 rounded-lg border border-red-500/50 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-500/20" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
@@ -677,7 +817,7 @@ const MyProjects = () => {
               </div>
 
               <div className="flex gap-3 p-6 border-t border-border/50">
-                <motion.button onClick={() => setModalMode(null)} className="flex-1 rounded-lg border border-border px-4 py-2.5 text-sm font-semibold hover:bg-muted" whileHover={{ scale: 1.02 }}>
+                <motion.button onClick={() => { setModalMode(null); setInviteSearch(""); setShowInviteSection(false); }} className="flex-1 rounded-lg border border-border px-4 py-2.5 text-sm font-semibold hover:bg-muted" whileHover={{ scale: 1.02 }}>
                   Close
                 </motion.button>
               </div>
