@@ -8,6 +8,7 @@ export interface Notification {
   time: string;
   read: boolean;
   type: "info" | "success" | "warning";
+  projectTitle?: string; // for joinAccepted
 }
 
 interface NotificationContextType {
@@ -57,7 +58,40 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     const initial = pool.slice(0, 2).map((n, i) => ({
       ...n, id: `init-${i}`, time: "Just now", read: false,
     }));
-    setNotifications(initial);
+
+    // Load joinAccepted and owner notifications
+    try {
+      const notifKey = `joinAccepted_${user.email}`;
+      const storedNotifs = localStorage.getItem(notifKey);
+      const joinNotifs = storedNotifs ? JSON.parse(storedNotifs).map((n: any, i: number) => ({
+        id: `join-${i}`,
+        title: "🎉 Team Invite Accepted!",
+        message: `You were accepted to join "${n.projectTitle}" by ${n.projectOwner}`,
+        time: n.timestamp,
+        read: false,
+        type: "success" as const,
+        projectTitle: n.projectTitle
+      })) : [];
+
+      const ownerNotifKey = `ownerNotifs_${user.email}`;
+      const ownerStored = localStorage.getItem(ownerNotifKey);
+      const ownerNotifs = ownerStored ? JSON.parse(ownerStored).map((n: any, i: number) => ({
+        id: `owner-${i}`,
+        title: "👥 New Join Request",
+        message: `${n.applicantName} wants to join "${n.projectTitle}"`,
+        time: n.timestamp,
+        read: false,
+        type: "warning" as const,
+        projectTitle: n.projectTitle,
+        applicantEmail: n.applicantEmail
+      })) : [];
+
+      setNotifications([...initial, ...joinNotifs, ...ownerNotifs]);
+    } catch (err) {
+      console.error("Error loading notifications:", err);
+      setNotifications(initial);
+    }
+
     setNotifIndex(2);
   }, [user]);
 

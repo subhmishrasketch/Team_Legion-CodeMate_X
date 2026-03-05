@@ -23,7 +23,6 @@ const PostProject = () => {
   const [deadline, setDeadline] = useState("");
   const [pitchVideo, setPitchVideo] = useState("");
   const [githubLink, setGithubLink] = useState("");
-  const [budget, setBudget] = useState("");
 
   const toggleSkill = (skill: string) => {
     setSelectedSkills((prev) =>
@@ -52,11 +51,15 @@ const PostProject = () => {
         urgent: false,
         details: {
           technologies: selectedSkills.join(", "),
-          budget: budget || "Not specified",
           difficulty: "Medium",
-          estimatedHours: "250 hours",
           description,
         },
+        owner: {
+          name: user?.name || "Anonymous",
+          email: user?.email || ""
+        },
+        joinRequests: [],
+        acceptedMembers: [],
         postedBy: user?.email,
         postedAt: new Date().toISOString(),
         github: githubLink,
@@ -136,20 +139,12 @@ const PostProject = () => {
             </div>
           </div>
 
-          {/* Budget & GitHub */}
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label className="mb-1.5 block text-sm font-semibold">Budget (optional)</label>
-              <input type="text" value={budget} onChange={(e) => setBudget(e.target.value)}
-                placeholder="e.g., ₹50,000"
-                className="h-11 w-full rounded-lg border border-border bg-background px-4 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary" />
-            </div>
-            <div>
-              <label className="mb-1.5 block text-sm font-semibold">GitHub Link (optional)</label>
-              <input type="url" value={githubLink} onChange={(e) => setGithubLink(e.target.value)}
-                placeholder="https://github.com/..."
-                className="h-11 w-full rounded-lg border border-border bg-background px-4 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary" />
-            </div>
+          {/* GitHub */}
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold">GitHub Link (optional)</label>
+            <input type="url" value={githubLink} onChange={(e) => setGithubLink(e.target.value)}
+              placeholder="https://github.com/..."
+              className="h-11 w-full rounded-lg border border-border bg-background px-4 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary" />
           </div>
 
           {/* Pitch Video */}

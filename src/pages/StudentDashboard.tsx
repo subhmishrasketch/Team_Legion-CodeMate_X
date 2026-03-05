@@ -5,7 +5,9 @@ import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { initializeSampleData } from "@/lib/initSampleData";
 
 const stats = [
   { label: "Active Projects", value: "24", sub: "+3 this week", icon: FolderOpen, color: "text-primary" },
@@ -34,9 +36,7 @@ const projects = [
     urgent: true,
     details: {
       technologies: "React, Python, TensorFlow, AR",
-      budget: "₹50,000",
       difficulty: "Hard",
-      estimatedHours: "400 hours",
       description: "Build a comprehensive campus navigation system with AR visualization and AI-powered route optimization."
     }
   },
@@ -49,9 +49,7 @@ const projects = [
     urgent: false,
     details: {
       technologies: "React, Node.js, IoT, D3.js",
-      budget: "₹30,000",
       difficulty: "Medium",
-      estimatedHours: "250 hours",
       description: "Create a real-time energy monitoring and analytics platform for global campus sustainability."
     }
   },
@@ -64,9 +62,7 @@ const projects = [
     urgent: false,
     details: {
       technologies: "Python, OpenCV, Flask, React",
-      budget: "₹40,000",
       difficulty: "Medium",
-      estimatedHours: "300 hours",
       description: "Develop an automated attendance system using facial recognition technology for educational institutions."
     }
   },
@@ -79,9 +75,7 @@ const projects = [
     urgent: false,
     details: {
       technologies: "React Native, Node.js, MongoDB, Stripe",
-      budget: "₹45,000",
       difficulty: "Medium",
-      estimatedHours: "350 hours",
       description: "Create a seamless mobile app for campus food ordering with payment integration and real-time tracking."
     }
   },
@@ -94,9 +88,7 @@ const projects = [
     urgent: true,
     details: {
       technologies: "TypeScript, PostgreSQL, React, IoT",
-      budget: "₹35,000",
       difficulty: "Easy",
-      estimatedHours: "200 hours",
       description: "Build a real-time seat reservation system for library management with QR-based verification."
     }
   },
@@ -109,9 +101,7 @@ const projects = [
     urgent: false,
     details: {
       technologies: "React, Node.js, Docker, ML/AI",
-      budget: "₹55,000",
       difficulty: "Hard",
-      estimatedHours: "450 hours",
       description: "Develop a collaborative code review platform with automated quality analysis and gamification elements."
     }
   },
@@ -122,8 +112,81 @@ const item = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
 
 const StudentDashboard = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [selectedProject, setSelectedProject] = useState<typeof projects[0] | null>(null);
   const [selectedProfile, setSelectedProfile] = useState<any>(null);
+  const [selectedStat, setSelectedStat] = useState<string | null>(null);
+  const [realStats, setRealStats] = useState(stats);
+  const [teamRequests, setTeamRequests] = useState<any[]>([]);
+  const [activeProjects, setActiveProjects] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Initialize sample data for first-time users
+    if (user?.email && user?.name) {
+      initializeSampleData(user.email, user.name);
+    }
+
+    // Calculate real stats from localStorage data
+    try {
+      const postedKey = "postedProjects";
+      const posted = localStorage.getItem(postedKey);
+      const postedProjects = posted ? JSON.parse(posted) : [];
+
+      // Get projects owned by current user
+      const myProjects = postedProjects.filter((p: any) => p.owner?.email === user?.email);
+      setActiveProjects(myProjects);
+
+      // Calculate team requests
+      const requests: any[] = [];
+      myProjects.forEach((project: any) => {
+        if (project.joinRequests && project.joinRequests.length > 0) {
+          project.joinRequests.forEach((request: any) => {
+            requests.push({
+              ...request,
+              projectTitle: project.title,
+              projectMembers: (project.acceptedMembers?.length || 0) + 1 // +1 for owner
+            });
+          });
+        }
+      });
+      setTeamRequests(requests);
+
+      // Update stats with real data
+      const updatedStats = [
+        { 
+          label: "Active Projects", 
+          value: myProjects.length.toString(), 
+          sub: `${requests.length} pending requests`, 
+          icon: FolderOpen, 
+          color: "text-primary" 
+        },
+        { 
+          label: "Team Requests", 
+          value: requests.length.toString(), 
+          sub: `${requests.length > 0 ? requests.length : 'No'} pending`, 
+          icon: Users, 
+          color: "text-warning" 
+        },
+        { 
+          label: "Activity Points", 
+          value: "145", 
+          sub: "+15 this month", 
+          icon: Trophy, 
+          color: "text-success" 
+        },
+        { 
+          label: "Skill Matches", 
+          value: projects.length.toString(), 
+          sub: "projects available", 
+          icon: TrendingUp, 
+          color: "text-primary" 
+        },
+      ];
+      setRealStats(updatedStats);
+    } catch (err) {
+      console.error("Error calculating stats:", err);
+    }
+  }, [user]);
 
   const handleJoin = (projectTitle: string) => {
     toast.success(`Request sent to join "${projectTitle}"! 🎉`);
@@ -145,9 +208,10 @@ const StudentDashboard = () => {
 
       {/* Stats */}
       <motion.div variants={item} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((s, idx) => (
+        {realStats.map((s, idx) => (
           <motion.div 
             key={s.label} 
+            onClick={() => setSelectedStat(s.label)}
             whileHover={{ y: -4, boxShadow: "0 8px 16px rgba(0,0,0,0.1)" }}
             className="flex items-center justify-between rounded-xl border border-border bg-card p-5 transition-all cursor-pointer">
             <div>
@@ -309,14 +373,6 @@ const StudentDashboard = () => {
                   <div className="rounded-lg bg-muted/50 p-4">
                     <p className="text-xs font-semibold text-muted-foreground mb-1">Difficulty</p>
                     <p className="text-sm font-semibold">{selectedProject.details.difficulty}</p>
-                  </div>
-                  <div className="rounded-lg bg-muted/50 p-4">
-                    <p className="text-xs font-semibold text-muted-foreground mb-1">Budget</p>
-                    <p className="text-sm font-semibold text-primary">{selectedProject.details.budget}</p>
-                  </div>
-                  <div className="rounded-lg bg-muted/50 p-4">
-                    <p className="text-xs font-semibold text-muted-foreground mb-1">Estimated Hours</p>
-                    <p className="text-sm font-semibold">{selectedProject.details.estimatedHours}</p>
                   </div>
                   <div className="rounded-lg bg-muted/50 p-4">
                     <p className="text-xs font-semibold text-muted-foreground mb-1">Team Slots</p>
@@ -581,6 +637,167 @@ const StudentDashboard = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Stat Details Modal */}
+      <AnimatePresence>
+        {selectedStat && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedStat(null)}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 backdrop-blur-sm p-4">
+            <motion.div 
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className={`w-full ${selectedStat === "Active Projects" || selectedStat === "Team Requests" ? "max-w-2xl" : "max-w-md"} rounded-2xl border border-border bg-card shadow-2xl max-h-[80vh] overflow-y-auto`}>
+              
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="font-heading text-2xl font-bold">{selectedStat}</h2>
+                  <motion.button 
+                    whileHover={{ scale: 1.1 }}
+                    onClick={() => setSelectedStat(null)}
+                    className="text-muted-foreground hover:text-foreground transition-colors">
+                    ✕
+                  </motion.button>
+                </div>
+
+                <div className="space-y-4">
+                  {selectedStat === "Active Projects" && (
+                    <div className="space-y-4">
+                      {activeProjects.length > 0 ? (
+                        <>
+                          <p className="text-sm text-muted-foreground mb-4">You have {activeProjects.length} active projects. {realStats[0].sub}</p>
+                          <div className="space-y-3">
+                            {activeProjects.map((proj, idx) => (
+                              <motion.div 
+                                key={idx}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: idx * 0.05 }}
+                                className="p-4 rounded-lg border border-border bg-muted/30">
+                                <div className="flex items-start justify-between mb-2">
+                                  <div className="flex-1">
+                                    <h4 className="font-semibold text-sm">{proj.title}</h4>
+                                    <p className="text-xs text-muted-foreground mt-1">You're the Lead</p>
+                                  </div>
+                                  <Badge className="text-xs">In Progress</Badge>
+                                </div>
+                                <p className="text-xs text-muted-foreground mb-2">{proj.desc}</p>
+                                <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
+                                  <span className="flex items-center gap-1"><Users className="h-3 w-3" /> {(proj.acceptedMembers?.length || 0) + 1}/5 members</span>
+                                  <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {proj.deadline}</span>
+                                </div>
+                                <div className="flex gap-2">
+                                  <motion.button 
+                                    whileHover={{ scale: 1.02 }}
+                                    onClick={() => {
+                                      setSelectedStat(null);
+                                      navigate(`/my-projects/${encodeURIComponent(proj.title)}`);
+                                    }}
+                                    className="flex-1 px-3 py-1.5 text-xs bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium">
+                                    View Project
+                                  </motion.button>
+                                </div>
+                              </motion.div>
+                            ))}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="text-center py-8">
+                          <FolderOpen className="h-16 w-16 text-primary mx-auto mb-4" />
+                          <p className="text-muted-foreground">No active projects yet. Join a project to get started!</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {selectedStat === "Team Requests" && (
+                    <div className="space-y-4">
+                      {teamRequests.length > 0 ? (
+                        <>
+                          <p className="text-sm text-muted-foreground mb-4">You have {teamRequests.length} pending join requests. Accept to add them to your project team.</p>
+                          <div className="space-y-3 max-h-96">
+                            {teamRequests.map((request, idx) => (
+                              <motion.div 
+                                key={idx}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: idx * 0.05 }}
+                                className="p-4 rounded-lg border border-border bg-muted/30">
+                                <div className="flex items-start justify-between mb-2">
+                                  <div className="flex-1">
+                                    <p className="font-semibold text-sm">{request.name}</p>
+                                    <p className="text-xs text-muted-foreground">{request.email} • {request.department}</p>
+                                  </div>
+                                  <Badge variant="outline" className="text-xs">{request.skills?.slice(0, 2).join(", ")}</Badge>
+                                </div>
+                                <div className="bg-muted/50 p-3 rounded-lg my-3 border border-border/50">
+                                  <p className="text-xs font-semibold text-primary mb-1">📁 {request.projectTitle}</p>
+                                  <p className="text-xs text-muted-foreground">👥 Current team: {request.projectMembers} members</p>
+                                </div>
+                                <div className="flex gap-2">
+                                  <motion.button
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => {
+                                      toast.success(`${request.name} has been added to ${request.projectTitle}! 🎉`);
+                                    }}
+                                    className="flex-1 px-3 py-1.5 text-xs bg-success text-white rounded-lg hover:bg-success/90 transition-colors font-medium">
+                                    ✓ Accept
+                                  </motion.button>
+                                  <motion.button
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => {
+                                      toast.success(`Request from ${request.name} declined.`);
+                                    }}
+                                    className="flex-1 px-3 py-1.5 text-xs bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors font-medium border border-border">
+                                    ✕ Decline
+                                  </motion.button>
+                                </div>
+                              </motion.div>
+                            ))}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="text-center py-8">
+                          <Users className="h-16 w-16 text-warning mx-auto mb-4" />
+                          <p className="text-muted-foreground">No pending team requests at the moment.</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {selectedStat === "Activity Points" && (
+                    <div className="text-center py-8">
+                      <Trophy className="h-16 w-16 text-success mx-auto mb-4" />
+                      <p className="text-muted-foreground">You've earned 145 activity points this month.</p>
+                      <p className="text-sm text-muted-foreground mt-2">+15 points from recent projects!</p>
+                    </div>
+                  )}
+                  {selectedStat === "Skill Matches" && (
+                    <div className="text-center py-8">
+                      <TrendingUp className="h-16 w-16 text-primary mx-auto mb-4" />
+                      <p className="text-muted-foreground">{realStats[3].value} projects match your skills perfectly.</p>
+                      <p className="text-sm text-muted-foreground mt-2">{realStats[3].sub}</p>
+                    </div>
+                  )}
+                </div>
+
+                <motion.button 
+                  onClick={() => setSelectedStat(null)}
+                  className="w-full mt-6 rounded-lg border border-border px-4 py-2.5 text-sm font-semibold hover:bg-muted transition-colors"
+                  whileHover={{ scale: 1.02 }}>
+                  Close
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </motion.div>
   );
 };

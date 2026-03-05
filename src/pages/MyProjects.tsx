@@ -1,5 +1,5 @@
 import { DashboardLayout } from "@/components/DashboardLayout";
-import { FolderOpen, Users, Clock, Plus, Copy, Trash2, X, Share2, UserX, Info, Check } from "lucide-react";
+import { FolderOpen, Users, Clock, Plus, Copy, Trash2, X, Share2, UserX, Info, Check, User as UserIcon, Mail, Phone, Github, Linkedin, ThumbsUp, ThumbsDown, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,27 +9,134 @@ import { useAuth } from "@/contexts/AuthContext";
 import { projects as defaultProjects } from "@/lib/projects";
 import { toast } from "sonner";
 
+interface JoinRequest {
+  name: string;
+  email: string;
+  phone?: string;
+  department: string;
+  skills?: string[];
+  github?: string;
+  linkedin?: string;
+  requestedDate: string;
+}
 
 const MyProjects = () => {
   const navigate = useNavigate();
   const { user, demoMode } = useAuth();
   const [allProjects, setAllProjects] = useState(defaultProjects);
+  const [myPostedProjects, setMyPostedProjects] = useState<any[]>([]);
+  const [joinedProjects, setJoinedProjects] = useState<any[]>([]);
+  const [recommendedProjects, setRecommendedProjects] = useState<any[]>([]);
   const [selectedProject, setSelectedProject] = useState<any>(null);
-  const [modalMode, setModalMode] = useState<"manage" | "details" | null>(null);
+  const [selectedProfile, setSelectedProfile] = useState<any>(null);
+  const [modalMode, setModalMode] = useState<"manage" | "details" | "profile" | null>(null);
   const [appliedProjects, setAppliedProjects] = useState<string[]>([]);
 
   useEffect(() => {
     // Load posted projects from localStorage
     try {
       const postedKey = "postedProjects";
-      const posted = localStorage.getItem(postedKey);
-      const postedProjects = posted ? JSON.parse(posted) : [];
+      let posted = localStorage.getItem(postedKey);
+      let postedProjects = posted ? JSON.parse(posted) : [];
+
+      // If no posted projects, add some sample ones
+      if (postedProjects.length === 0) {
+        const sampleProjects = [
+          {
+            title: "AI Campus Navigator",
+            desc: "An intelligent campus navigation system using computer vision and AR.",
+            owner: { name: user?.name || "Demo User", email: user?.email || "demo@college.edu" },
+            joinRequests: [
+              {
+                name: "Priya Sharma",
+                email: "priya@college.edu",
+                phone: "+91 99887 11223",
+                department: "CSE",
+                skills: ["React", "Python", "TensorFlow"],
+                github: "https://github.com/priya",
+                linkedin: "https://linkedin.com/in/priya",
+                requestedDate: new Date().toLocaleString()
+              },
+              {
+                name: "Rahul Mehta",
+                email: "rahul@college.edu",
+                phone: "+91 98765 44332",
+                department: "CSE",
+                skills: ["React", "Node.js", "IoT"],
+                github: "https://github.com/rahul",
+                linkedin: "https://linkedin.com/in/rahul",
+                requestedDate: new Date().toLocaleString()
+              }
+            ],
+            acceptedMembers: [],
+            tags: ["React", "Python", "AI"],
+            deadline: "Mar 15, 2026"
+          },
+          {
+            title: "Green Energy Dashboard",
+            desc: "Real-time monitoring dashboard for campus solar panels.",
+            owner: { name: user?.name || "Demo User", email: user?.email || "demo@college.edu" },
+            joinRequests: [
+              {
+                name: "Neha Rao",
+                email: "neha@college.edu",
+                phone: "+91 91234 56789",
+                department: "IT",
+                skills: ["Python", "OpenCV", "Flask"],
+                github: "https://github.com/neha",
+                linkedin: "https://linkedin.com/in/neha",
+                requestedDate: new Date().toLocaleString()
+              }
+            ],
+            acceptedMembers: [],
+            tags: ["React", "IoT"],
+            deadline: "Apr 01, 2026"
+          },
+          {
+            title: "Smart Attendance System",
+            desc: "Face recognition based attendance system for lecture halls.",
+            owner: { name: user?.name || "Demo User", email: user?.email || "demo@college.edu" },
+            joinRequests: [],
+            acceptedMembers: [
+              {
+                name: "Vikram Patel",
+                email: "vikram@college.edu",
+                phone: "+91 88776 55443",
+                department: "CSE",
+                skills: ["React Native", "Node.js"],
+                github: "https://github.com/vikram",
+                linkedin: "https://linkedin.com/in/vikram",
+                requestedDate: new Date().toLocaleString()
+              }
+            ],
+            tags: ["Python", "OpenCV"],
+            deadline: "Mar 28, 2026"
+          }
+        ];
+        postedProjects = sampleProjects;
+        localStorage.setItem(postedKey, JSON.stringify(postedProjects));
+      }
+      
+      // Categorize projects for current user
+      const myPosted = postedProjects.filter((p: any) => p.owner?.email === user?.email);
+      const joined = postedProjects.filter((p: any) => 
+        p.acceptedMembers?.some((m: any) => m.email === user?.email)
+      );
+      const recommended = postedProjects.filter((p: any) => 
+        p.owner?.email !== user?.email && 
+        !p.acceptedMembers?.some((m: any) => m.email === user?.email) &&
+        !p.joinRequests?.some((r: any) => r.email === user?.email)
+      );
+      
+      setMyPostedProjects(myPosted);
+      setJoinedProjects(joined);
+      setRecommendedProjects(recommended);
       setAllProjects([...postedProjects, ...defaultProjects]);
     } catch (err) {
-      console.error("Error loading posted projects:", err);
+      console.error("Error loading projects:", err);
     }
 
-    // Load user's applications
+    // Load user's applications (legacy)
     try {
       const applicationsKey = `applications_${user?.email}`;
       const apps = localStorage.getItem(applicationsKey);
@@ -72,40 +179,146 @@ const MyProjects = () => {
     }
 
     try {
-      const applicationsKey = `applications_${user.email}`;
-      const updated = [...appliedProjects, selectedProject.title];
-      setAppliedProjects(updated);
-      localStorage.setItem(applicationsKey, JSON.stringify(updated));
+      const postedKey = "postedProjects";
+      const posted = localStorage.getItem(postedKey);
+      const postedProjects = posted ? JSON.parse(posted) : [];
       
-      // Notify project owner
-      const projectNotifKey = `projectApplications_${selectedProject.title}`;
-      const existingApps = localStorage.getItem(projectNotifKey);
-      const allApps = existingApps ? JSON.parse(existingApps) : [];
-      allApps.push({
-        applicantName: user.name,
-        applicantEmail: user.email,
-        applicantPhone: user.phone || "N/A",
-        appliedDate: new Date().toLocaleString()
-      });
-      localStorage.setItem(projectNotifKey, JSON.stringify(allApps));
-      
-      toast.success(`✓ Application sent to ${selectedProject.title}!`);
-      setModalMode(null);
+      const updateIdx = postedProjects.findIndex((p: any) => p.title === selectedProject.title);
+      if (updateIdx >= 0) {
+        if (!postedProjects[updateIdx].joinRequests) {
+          postedProjects[updateIdx].joinRequests = [];
+        }
+        
+        if (postedProjects[updateIdx].joinRequests.some((r: any) => r.email === user.email)) {
+          toast.error("Already applied to this project");
+          return;
+        }
+        
+        postedProjects[updateIdx].joinRequests.push({
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          department: user.department,
+          skills: user.skills,
+          github: user.github,
+          linkedin: user.linkedin,
+          requestedDate: new Date().toLocaleString()
+        });
+        
+        localStorage.setItem(postedKey, JSON.stringify(postedProjects));
+        setRecommendedProjects(recommendedProjects.filter(p => p.title !== selectedProject.title));
+        
+        // Notify project owner
+        const ownerNotifKey = `ownerNotifs_${selectedProject.owner.email}`;
+        const ownerNotifs = JSON.parse(localStorage.getItem(ownerNotifKey) || "[]");
+        ownerNotifs.push({
+          type: "joinRequest",
+          projectTitle: selectedProject.title,
+          applicantName: user.name,
+          applicantEmail: user.email,
+          timestamp: new Date().toLocaleString()
+        });
+        localStorage.setItem(ownerNotifKey, JSON.stringify(ownerNotifs));
+        
+        toast.success("✓ Request sent!");
+        setModalMode(null);
+      }
     } catch (err) {
-      console.error("Error applying to project:", err);
+      console.error("Error applying:", err);
       toast.error("Failed to apply");
+    }
+  };
+
+  const acceptJoinRequest = (request: JoinRequest) => {
+    if (!selectedProject) return;
+
+    try {
+      const postedKey = "postedProjects";
+      const posted = localStorage.getItem(postedKey);
+      const postedProjects = posted ? JSON.parse(posted) : [];
+      
+      const updateIdx = postedProjects.findIndex((p: any) => p.title === selectedProject.title);
+      if (updateIdx >= 0) {
+        postedProjects[updateIdx].joinRequests = postedProjects[updateIdx].joinRequests?.filter((r: any) => r.email !== request.email) || [];
+        
+        if (!postedProjects[updateIdx].acceptedMembers) {
+          postedProjects[updateIdx].acceptedMembers = [];
+        }
+        postedProjects[updateIdx].acceptedMembers.push(request);
+        
+        // Notify accepted user
+        const notifKey = `joinAccepted_${request.email}`;
+        const notifs = JSON.parse(localStorage.getItem(notifKey) || "[]");
+        notifs.push({
+          type: "joinAccepted",
+          projectTitle: selectedProject.title,
+          projectOwner: user?.name,
+          timestamp: new Date().toLocaleString()
+        });
+        localStorage.setItem(notifKey, JSON.stringify(notifs));
+        
+        localStorage.setItem(postedKey, JSON.stringify(postedProjects));
+        setSelectedProject(postedProjects[updateIdx]);
+        toast.success(`✓ ${request.name} accepted!`);
+      }
+    } catch (err) {
+      console.error("Error accepting:", err);
+      toast.error("Failed to accept");
+    }
+  };
+
+  const rejectJoinRequest = (request: JoinRequest) => {
+    if (!selectedProject) return;
+
+    try {
+      const postedKey = "postedProjects";
+      const posted = localStorage.getItem(postedKey);
+      const postedProjects = posted ? JSON.parse(posted) : [];
+      
+      const updateIdx = postedProjects.findIndex((p: any) => p.title === selectedProject.title);
+      if (updateIdx >= 0) {
+        postedProjects[updateIdx].joinRequests = postedProjects[updateIdx].joinRequests?.filter((r: any) => r.email !== request.email) || [];
+        localStorage.setItem(postedKey, JSON.stringify(postedProjects));
+        setSelectedProject(postedProjects[updateIdx]);
+        toast.success(`Rejected`);
+      }
+    } catch (err) {
+      console.error("Error rejecting:", err);
+      toast.error("Failed to reject");
+    }
+  };
+
+  const removeMember = (memberEmail: string) => {
+    if (!selectedProject) return;
+
+    try {
+      const postedKey = "postedProjects";
+      const posted = localStorage.getItem(postedKey);
+      const postedProjects = posted ? JSON.parse(posted) : [];
+      
+      const updateIdx = postedProjects.findIndex((p: any) => p.title === selectedProject.title);
+      if (updateIdx >= 0) {
+        postedProjects[updateIdx].acceptedMembers = (postedProjects[updateIdx].acceptedMembers || []).filter((m: any) => m.email !== memberEmail);
+        localStorage.setItem(postedKey, JSON.stringify(postedProjects));
+        setSelectedProject(postedProjects[updateIdx]);
+        toast.success("Member removed from project");
+      }
+    } catch (err) {
+      console.error("Error removing member:", err);
+      toast.error("Failed to remove member");
     }
   };
 
   return (
     <DashboardLayout>
-      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
+        {/* Header */}
         <div className="flex items-center justify-between flex-col sm:flex-row">
           <div>
             <h1 className="font-heading text-3xl font-bold flex items-center gap-2">
               <FolderOpen className="h-7 w-7 text-primary" /> My Projects
             </h1>
-            <p className="mt-1 text-muted-foreground">Manage and track your active projects.</p>
+            <p className="mt-1 text-muted-foreground">Post, manage, and collaborate on projects.</p>
           </div>
           <motion.button 
             onClick={() => navigate("/post-project")}
@@ -117,303 +330,354 @@ const MyProjects = () => {
           </motion.button>
         </div>
 
-        <motion.div 
-          className="space-y-4"
-          initial="hidden"
-          animate="visible"
-          variants={{
-            hidden: { opacity: 0 },
-            visible: {
-              opacity: 1,
-              transition: { staggerChildren: 0.05 },
-            },
-          }}
-        >
-          {allProjects.length === 0 ? (
-            <motion.div 
-              className="rounded-xl border border-border/50 bg-card p-8 text-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
-              <p className="text-muted-foreground">No projects yet. <button onClick={() => navigate("/post-project")} className="text-primary hover:underline font-semibold">Post one now!</button></p>
+        {/* Posted Projects */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Users className="h-5 w-5 text-primary" />
+            <h2 className="font-heading text-xl font-bold">Posted Projects</h2>
+            <Badge variant="secondary">{myPostedProjects.length}</Badge>
+          </div>
+
+          {myPostedProjects.length === 0 ? (
+            <motion.div className="rounded-xl border border-border/50 bg-card/50 p-6 text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+              <p className="text-muted-foreground">No projects posted. <button onClick={() => navigate("/post-project")} className="text-primary hover:underline font-semibold">Post one!</button></p>
             </motion.div>
           ) : (
-            allProjects.map((p, idx) => (
-              <motion.div 
-                key={`${p.title}-${idx}`} 
-                className="rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm p-5 transition-all hover:shadow-lg hover:bg-card"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.05 }}
-                whileHover={{ y: -2 }}
-              >
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="flex-1 min-w-0">
-                    <div className="mb-2 flex items-center gap-2 flex-wrap">
+            <motion.div className="space-y-3" initial="hidden" animate="visible" variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.05 } } }}>
+              {myPostedProjects.map((p, idx) => (
+                <motion.div key={`${p.title}-${idx}`} className="rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm p-5 transition-all hover:shadow-lg hover:bg-card" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} whileHover={{ y: -2 }}>
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="flex-1">
                       <h3 className="font-heading text-lg font-semibold">{p.title}</h3>
-                      <Badge variant={p.status === "In Progress" ? "default" : "secondary"} className="text-[10px]">{p.status || "Active"}</Badge>
-                      <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">{p.role || "Team Member"}</span>
+                      <p className="text-sm text-muted-foreground line-clamp-2">{p.desc}</p>
+                      {p.joinRequests && p.joinRequests.length > 0 && <p className="text-xs text-orange-500 font-medium mt-2">🔔 {p.joinRequests.length} join request(s)</p>}
                     </div>
-                    <p className="text-sm text-muted-foreground line-clamp-2">{p.desc}</p>
-                    <div className="mt-3 flex flex-wrap gap-1.5">
-                      {p.tags.slice(0, 4).map((t) => (
-                        <motion.span 
-                          key={t} 
-                          className="rounded-md border border-border/50 px-2 py-0.5 text-xs text-muted-foreground bg-primary/5"
-                          whileHover={{ scale: 1.05 }}
-                        >
-                          {t}
-                        </motion.span>
-                      ))}
-                      {p.tags.length > 4 && <span className="text-xs text-muted-foreground">+{p.tags.length - 4}</span>}
-                    </div>
-
-                    <div className="mt-4">
-                      <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-                        <span>Team Members</span>
-                        <span className="font-semibold text-foreground">{p.members}</span>
-                      </div>
-                      <Progress value={(parseInt(p.members.split("/")[0]) / parseInt(p.members.split("/")[1])) * 100} className="h-2" />
-                    </div>
-
-                    <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> Due: {p.deadline}</span>
-                      <span>Match: <strong className="text-primary">{p.match}%</strong></span>
+                    <div className="flex gap-2">
+                      <motion.button onClick={() => { setSelectedProject(p); setModalMode("details"); }} className="flex items-center gap-1 rounded-lg border border-border/50 px-3 py-2 text-xs font-medium hover:bg-primary/10" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <Eye className="h-3.5 w-3.5" /> Open
+                      </motion.button>
+                      <motion.button onClick={() => { setSelectedProject(p); setModalMode("manage"); }} className="flex items-center gap-1 rounded-lg border border-border/50 px-3 py-2 text-xs font-medium hover:bg-primary/10" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <Users className="h-3.5 w-3.5" /> Manage
+                      </motion.button>
                     </div>
                   </div>
-
-                  <div className="flex gap-2 shrink-0 flex-wrap justify-end">
-                    <motion.button 
-                      onClick={() => {
-                        setSelectedProject(p);
-                        setModalMode("details");
-                      }}
-                      className="flex items-center gap-1 rounded-lg border border-border/50 px-3 py-2 text-xs font-medium hover:bg-primary/10 hover:border-primary/50 transition-all"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      title="View project details and share"
-                    >
-                      <Info className="h-3.5 w-3.5" /> Open
-                    </motion.button>
-                    <motion.button 
-                      onClick={() => {
-                        setSelectedProject(p);
-                        setModalMode("manage");
-                      }}
-                      className="flex items-center gap-1 rounded-lg border border-border/50 px-3 py-2 text-xs font-medium hover:bg-primary/10 hover:border-primary/50 transition-all"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      title="Manage team or delete"
-                    >
-                      <Users className="h-3.5 w-3.5" /> Manage
-                    </motion.button>
-                  </div>
-                </div>
-              </motion.div>
-            ))
+                </motion.div>
+              ))}
+            </motion.div>
           )}
-        </motion.div>
+        </div>
+
+        {/* Joined Projects */}
+        {joinedProjects.length > 0 && (
+          <div className="space-y-3 pt-6 border-t border-border">
+            <div className="flex items-center gap-2">
+              <Check className="h-5 w-5 text-green-500" />
+              <h2 className="font-heading text-xl font-bold">Joined Projects</h2>
+              <Badge variant="outline">{joinedProjects.length}</Badge>
+            </div>
+
+            <motion.div className="space-y-3" initial="hidden" animate="visible" variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.05 } } }}>
+              {joinedProjects.map((p, idx) => (
+                <motion.div key={`joined-${p.title}-${idx}`} className="rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm p-5" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} whileHover={{ y: -2 }}>
+                  <h3 className="font-heading text-lg font-semibold">{p.title}</h3>
+                  <p className="text-sm text-muted-foreground">By <span className="font-semibold cursor-pointer hover:text-primary" onClick={() => { setSelectedProfile(p.owner); setModalMode("profile"); }}>{p.owner?.name}</span></p>
+                  <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{p.desc}</p>
+                  <motion.button onClick={() => { setSelectedProfile(p.owner); setModalMode("profile"); }} className="mt-3 flex items-center gap-1 rounded-lg border border-border/50 px-3 py-2 text-xs font-medium hover:bg-primary/10" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <UserIcon className="h-3.5 w-3.5" /> View Owner
+                  </motion.button>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        )}
+
+        {/* Recommended Projects */}
+        {recommendedProjects.length > 0 && (
+          <div className="space-y-3 pt-6 border-t border-border">
+            <h2 className="font-heading text-xl font-bold">Discover Projects</h2>
+
+            <motion.div className="space-y-3" initial="hidden" animate="visible" variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.05 } } }}>
+              {recommendedProjects.slice(0, 5).map((p, idx) => (
+                <motion.div key={`recommended-${p.title}-${idx}`} className="rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm p-5" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} whileHover={{ y: -2 }}>
+                  <h3 className="font-heading text-lg font-semibold">{p.title}</h3>
+                  <p className="text-sm text-muted-foreground">By <span className="font-semibold cursor-pointer hover:text-primary" onClick={() => { setSelectedProfile(p.owner); setModalMode("profile"); }}>{p.owner?.name}</span></p>
+                  <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{p.desc}</p>
+                  <div className="flex gap-2 mt-3">
+                    <motion.button onClick={() => { setSelectedProject(p); applyToProject(); }} className="flex-1 flex items-center justify-center gap-1 rounded-lg gradient-primary px-3 py-2 text-xs font-semibold text-primary-foreground hover:opacity-90" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <Check className="h-3.5 w-3.5" /> Apply to Join
+                    </motion.button>
+                    <motion.button onClick={() => { setSelectedProfile(p.owner); setModalMode("profile"); }} className="flex items-center gap-1 rounded-lg border border-border/50 px-3 py-2 text-xs font-medium hover:bg-primary/10" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <UserIcon className="h-3.5 w-3.5" /> Profile
+                    </motion.button>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        )}
       </motion.div>
+
+      {/* Profile Modal */}
+      <AnimatePresence>
+        {selectedProfile && modalMode === "profile" && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4" onClick={() => setModalMode(null)}>
+            <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="w-full max-w-md rounded-2xl border border-border/50 bg-card backdrop-blur-xl p-8 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-start justify-between mb-6">
+                <h2 className="font-heading text-2xl font-bold">Student Profile</h2>
+                <motion.button onClick={() => setModalMode(null)} className="p-2 hover:bg-muted rounded-lg" whileHover={{ scale: 1.1 }}>
+                  <X className="h-5 w-5" />
+                </motion.button>
+              </div>
+
+              <div className="space-y-4">
+                <div className="text-center py-4 border-b border-border/50">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-primary/50 to-secondary/50">
+                    {selectedProfile?.photo ? (
+                      <img src={selectedProfile.photo} alt="Profile" className="w-full h-full object-cover rounded-full" />
+                    ) : (
+                      <span className="text-2xl font-bold text-white">{selectedProfile?.name?.split(' ').map((n: string) => n[0]).join('')}</span>
+                    )}
+                  </div>
+                  <h3 className="font-heading text-xl font-bold mt-3">{selectedProfile?.name}</h3>
+                </div>
+
+                {selectedProfile?.department && (
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                    <span className="text-muted-foreground text-sm font-medium">Department:</span>
+                    <span className="font-semibold">{selectedProfile.department}</span>
+                  </div>
+                )}
+
+                {selectedProfile?.email && (
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    <a href={`mailto:${selectedProfile.email}`} className="text-primary hover:underline text-sm">{selectedProfile.email}</a>
+                  </div>
+                )}
+
+                {selectedProfile?.phone && (
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm">{selectedProfile.phone}</span>
+                  </div>
+                )}
+
+                {selectedProfile?.github && (
+                  <motion.a href={selectedProfile.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 hover:bg-primary/10" whileHover={{ scale: 1.02 }}>
+                    <Github className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-primary hover:underline text-sm font-medium">GitHub</span>
+                  </motion.a>
+                )}
+
+                {selectedProfile?.linkedin && (
+                  <motion.a href={selectedProfile.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 hover:bg-primary/10" whileHover={{ scale: 1.02 }}>
+                    <Linkedin className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-primary hover:underline text-sm font-medium">LinkedIn</span>
+                  </motion.a>
+                )}
+              </div>
+
+              <motion.button onClick={() => setModalMode(null)} className="w-full mt-6 rounded-lg border border-border px-4 py-2.5 text-sm font-semibold hover:bg-muted" whileHover={{ scale: 1.02 }}>
+                Close
+              </motion.button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Project Details Modal */}
       <AnimatePresence>
         {selectedProject && modalMode === "details" && (
-          <motion.div
+          <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
-            onClick={() => {
-              setSelectedProject(null);
-              setModalMode(null);
-            }}
-          >
-            <motion.div
+            onClick={() => setModalMode(null)}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
+            <motion.div 
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              className="w-full max-w-2xl rounded-2xl border border-border/50 bg-card backdrop-blur-xl shadow-2xl my-auto"
               onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-start justify-between p-6 border-b border-border/50">
-                <div>
-                  <h2 className="font-heading text-2xl font-bold">{selectedProject.title}</h2>
-                  <p className="text-sm text-muted-foreground mt-1">{selectedProject.desc}</p>
-                </div>
-                <motion.button
-                  onClick={() => {
-                    setSelectedProject(null);
-                    setModalMode(null);
-                  }}
-                  className="p-2 hover:bg-muted rounded-lg transition-colors"
-                  whileHover={{ scale: 1.1 }}
-                >
-                  <X className="h-6 w-6" />
-                </motion.button>
-              </div>
-
-              <div className="space-y-6 p-6 max-h-[calc(100vh-300px)] overflow-y-auto">
-                {/* Project Info Grid */}
-                <motion.div className="grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-lg bg-primary/5 border border-primary/20 p-4">
-                    <p className="text-xs text-muted-foreground font-semibold mb-1">Team Size</p>
-                    <p className="font-semibold text-foreground">{selectedProject.members}</p>
+              className="w-full max-w-2xl max-h-[80vh] overflow-y-auto rounded-2xl border border-border/50 bg-card backdrop-blur-xl shadow-2xl">
+              
+              {/* Header */}
+              <div className="sticky top-0 border-b border-border bg-card p-6 backdrop-blur-sm">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <h2 className="font-heading text-2xl font-bold">{selectedProject.title}</h2>
+                    <p className="text-sm text-muted-foreground mt-1">{selectedProject.desc}</p>
                   </div>
-                  <div className="rounded-lg bg-primary/5 border border-primary/20 p-4">
-                    <p className="text-xs text-muted-foreground font-semibold mb-1">Deadline</p>
-                    <p className="font-semibold text-foreground">{selectedProject.deadline}</p>
-                  </div>
-                  <div className="rounded-lg bg-primary/5 border border-primary/20 p-4">
-                    <p className="text-xs text-muted-foreground font-semibold mb-1">Project Match</p>
-                    <p className="font-semibold text-foreground">{selectedProject.match}%</p>
-                  </div>
-                  <div className="rounded-lg bg-primary/5 border border-primary/20 p-4">
-                    <p className="text-xs text-muted-foreground font-semibold mb-1">Status</p>
-                    <p className="font-semibold text-foreground">{selectedProject.status || "Active"}</p>
-                  </div>
-                </motion.div>
-
-                {/* Technologies */}
-                <div>
-                  <h3 className="text-sm font-semibold text-muted-foreground uppercase mb-3">Technologies</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedProject.tags.map((t: string) => (
-                      <Badge key={t}>{t}</Badge>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Share Project */}
-                <div className="border-t border-border/50 pt-6">
-                  <h3 className="text-sm font-semibold text-muted-foreground uppercase mb-3">Share Project</h3>
-                  <p className="text-sm text-muted-foreground mb-3">Copy the link below to share this project:</p>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={`${window.location.origin}/dashboard?project=${selectedProject.title}`}
-                      readOnly
-                      placeholder="Project share link"
-                      className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm"
-                    />
-                    <motion.button
-                      onClick={shareProject}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="flex items-center gap-2 rounded-lg gradient-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity">
-                      <Share2 className="h-4 w-4" /> Copy
-                    </motion.button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex gap-3 p-6 border-t border-border/50">
-                {!appliedProjects.includes(selectedProject?.title) ? (
-                  <>
-                    <motion.button
-                      onClick={applyToProject}
-                      className="flex-1 rounded-lg gradient-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <Check className="h-4 w-4" /> Apply to Join
-                    </motion.button>
-                    <motion.button
-                      onClick={() => {
-                        setSelectedProject(null);
-                        setModalMode(null);
-                      }}
-                      className="flex-1 rounded-lg border border-border px-4 py-2.5 text-sm font-semibold hover:bg-muted transition-colors"
-                      whileHover={{ scale: 1.02 }}
-                    >
-                      Close
-                    </motion.button>
-                  </>
-                ) : (
-                  <motion.button
-                    disabled
-                    className="flex-1 rounded-lg gradient-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground opacity-60 cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    <Check className="h-4 w-4" /> Already Applied
+                  <motion.button 
+                    whileHover={{ scale: 1.1 }}
+                    onClick={() => setModalMode(null)}
+                    className="text-muted-foreground hover:text-foreground transition-colors">
+                    ✕
                   </motion.button>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="p-6 space-y-6">
+                {/* Project Details */}
+                <div>
+                  <h3 className="font-semibold mb-3">Project Details</h3>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="rounded-lg bg-muted/50 p-4">
+                      <p className="text-xs font-semibold text-muted-foreground mb-1">Difficulty</p>
+                      <p className="text-sm font-semibold">{selectedProject.details?.difficulty || "Medium"}</p>
+                    </div>
+                    <div className="rounded-lg bg-muted/50 p-4">
+                      <p className="text-xs font-semibold text-muted-foreground mb-1">Technologies</p>
+                      <p className="text-sm font-semibold">{selectedProject.details?.technologies || selectedProject.tags?.join(", ")}</p>
+                    </div>
+                    <div className="rounded-lg bg-muted/50 p-4">
+                      <p className="text-xs font-semibold text-muted-foreground mb-1">Team Members</p>
+                      <p className="text-sm font-semibold">{(selectedProject.acceptedMembers?.length || 0) + 1} members</p>
+                    </div>
+                    <div className="rounded-lg bg-muted/50 p-4">
+                      <p className="text-xs font-semibold text-muted-foreground mb-1">Deadline</p>
+                      <p className="text-sm font-semibold">{selectedProject.deadline}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Join Requests */}
+                {selectedProject.joinRequests && selectedProject.joinRequests.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold mb-3">Pending Join Requests ({selectedProject.joinRequests.length})</h3>
+                    <div className="space-y-2">
+                      {selectedProject.joinRequests.map((request: any, idx: number) => (
+                        <div key={idx} className="flex items-center justify-between rounded-lg bg-muted/50 p-3">
+                          <div>
+                            <p className="font-medium text-sm">{request.name}</p>
+                            <p className="text-xs text-muted-foreground">{request.email}</p>
+                          </div>
+                          <span className="text-xs bg-warning/20 text-warning px-2 py-1 rounded">Pending</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 )}
+
+                {/* Accepted Members */}
+                {selectedProject.acceptedMembers && selectedProject.acceptedMembers.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold mb-3">Team Members ({selectedProject.acceptedMembers.length})</h3>
+                    <div className="space-y-2">
+                      {selectedProject.acceptedMembers.map((member: any, idx: number) => (
+                        <div key={idx} className="flex items-center justify-between rounded-lg bg-muted/50 p-3">
+                          <div>
+                            <p className="font-medium text-sm">{member.name}</p>
+                            <p className="text-xs text-muted-foreground">{member.email}</p>
+                          </div>
+                          <span className="text-xs bg-success/20 text-success px-2 py-1 rounded">Accepted</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Footer */}
+              <div className="sticky bottom-0 border-t border-border bg-card p-6">
+                <div className="flex gap-3">
+                  <motion.button onClick={() => setModalMode(null)} className="flex-1 rounded-lg border border-border px-4 py-2.5 text-sm font-semibold hover:bg-muted" whileHover={{ scale: 1.02 }}>
+                    Close
+                  </motion.button>
+                  <motion.button onClick={() => { setModalMode("manage"); }} className="flex-1 rounded-lg gradient-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90" whileHover={{ scale: 1.02 }}>
+                    Manage Project
+                  </motion.button>
+                </div>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Manage Modal */}
+      {/* Manage Project Modal */}
       <AnimatePresence>
         {selectedProject && modalMode === "manage" && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
-            onClick={() => {
-              setSelectedProject(null);
-              setModalMode(null);
-            }}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              className="w-full max-w-md rounded-2xl border border-border/50 bg-card backdrop-blur-xl p-8 shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h2 className="font-heading text-2xl font-bold mb-6">Manage "{selectedProject.title}"</h2>
-
-              {/* Team Members Section */}
-              <div className="space-y-4 mb-8 pb-8 border-b border-border/50">
-                {selectedProject && (
-                  <h3 className="text-sm font-semibold text-muted-foreground uppercase">
-                    Team Members ({parseInt(selectedProject.members.split("/")[0])})
-                  </h3>
-                )}
-                <div className="space-y-2">
-                  {/* create placeholder member names based on count */}
-                  {selectedProject &&
-                    Array.from({ length: parseInt(selectedProject.members.split("/")[0]) || 0 }, (_, i) => `Member ${i + 1}`).map((member) => (
-                      <div key={member} className="flex items-center justify-between rounded-lg bg-muted/50 p-3">
-                        <span className="text-sm font-medium">{member}</span>
-                        <motion.button
-                          onClick={() => toast.success(`${member} removed from project`)}
-                          className="flex items-center gap-1 text-xs text-red-500 hover:text-red-600 transition-colors"
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.95 }}
-                          title="Remove team member"
-                        >
-                          <UserX className="h-4 w-4" /> Remove
-                        </motion.button>
-                      </div>
-                    ))}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4 overflow-y-auto" onClick={() => setModalMode(null)}>
+            <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="w-full max-w-2xl rounded-2xl border border-border/50 bg-card backdrop-blur-xl shadow-2xl my-auto" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-start justify-between p-6 border-b border-border/50">
+                <div>
+                  <h2 className="font-heading text-2xl font-bold">{selectedProject.title}</h2>
+                  <p className="text-sm text-muted-foreground mt-1">{selectedProject.desc}</p>
                 </div>
-              </div>
-
-              {/* Delete Section */}
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">Danger Zone</p>
-                <motion.button
-                  onClick={() => deleteProject(selectedProject.title)}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full flex items-center justify-center gap-2 rounded-lg border border-red-500/50 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-500/20 transition-colors">
-                  <Trash2 className="h-4 w-4" /> Delete Project
+                <motion.button onClick={() => setModalMode(null)} className="p-2 hover:bg-muted rounded-lg" whileHover={{ scale: 1.1 }}>
+                  <X className="h-6 w-6" />
                 </motion.button>
               </div>
 
-              <div className="flex gap-3 mt-8">
-                <motion.button
-                  onClick={() => {
-                    setSelectedProject(null);
-                    setModalMode(null);
-                  }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="flex-1 rounded-lg border border-border px-4 py-2.5 text-sm font-semibold hover:bg-muted transition-colors">
+              <div className="space-y-6 p-6 max-h-[calc(100vh-300px)] overflow-y-auto">
+                {/* Join Requests */}
+                {selectedProject.joinRequests && selectedProject.joinRequests.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-muted-foreground uppercase mb-4">Join Requests ({selectedProject.joinRequests.length})</h3>
+                    <div className="space-y-3">
+                      {selectedProject.joinRequests.map((request: JoinRequest, idx: number) => (
+                        <motion.div key={`request-${idx}`} className="flex items-center justify-between rounded-lg bg-muted/50 p-4 border border-border/50" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.1 }}>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold">{request.name}</p>
+                            <p className="text-xs text-muted-foreground">{request.email} • {request.department}</p>
+                            {request.skills && request.skills.length > 0 && (
+                              <div className="flex gap-1 mt-2 flex-wrap">
+                                {request.skills.slice(0, 3).map(s => (
+                                  <span key={s} className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded">{s}</span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex gap-2 shrink-0">
+                            <motion.button onClick={() => acceptJoinRequest(request)} className="p-2 rounded-lg bg-green-500/20 text-green-600 hover:bg-green-500/30" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} title="Accept">
+                              <ThumbsUp className="h-4 w-4" />
+                            </motion.button>
+                            <motion.button onClick={() => rejectJoinRequest(request)} className="p-2 rounded-lg bg-red-500/20 text-red-600 hover:bg-red-500/30" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} title="Reject">
+                              <ThumbsDown className="h-4 w-4" />
+                            </motion.button>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Accepted Members */}
+                {selectedProject.acceptedMembers && selectedProject.acceptedMembers.length > 0 && (
+                  <div className="border-t border-border/50 pt-6">
+                    <h3 className="text-sm font-semibold text-muted-foreground uppercase mb-4">Team Members ({selectedProject.acceptedMembers.length})</h3>
+                    <div className="space-y-2">
+                      {selectedProject.acceptedMembers.map((member: any, idx: number) => (
+                        <motion.div key={`member-${member.email}`} className="flex items-center justify-between rounded-lg bg-muted/50 p-3" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.05 }}>
+                          <div className="flex-1">
+                            <p className="font-medium text-sm">{member.name}</p>
+                            <p className="text-xs text-muted-foreground">{member.email}</p>
+                          </div>
+                          <motion.button 
+                            onClick={() => removeMember(member.email)} 
+                            className="p-2 rounded-lg bg-red-500/20 text-red-600 hover:bg-red-500/30 transition-colors" 
+                            whileHover={{ scale: 1.1 }} 
+                            whileTap={{ scale: 0.95 }}
+                            title="Remove member">
+                            <UserX className="h-4 w-4" />
+                          </motion.button>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Delete */}
+                <div className="border-t border-border/50 pt-6">
+                  <motion.button onClick={() => deleteProject(selectedProject.title)} className="w-full flex items-center justify-center gap-2 rounded-lg border border-red-500/50 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-500/20" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                    <Trash2 className="h-4 w-4" /> Delete Project
+                  </motion.button>
+                </div>
+              </div>
+
+              <div className="flex gap-3 p-6 border-t border-border/50">
+                <motion.button onClick={() => setModalMode(null)} className="flex-1 rounded-lg border border-border px-4 py-2.5 text-sm font-semibold hover:bg-muted" whileHover={{ scale: 1.02 }}>
                   Close
                 </motion.button>
               </div>

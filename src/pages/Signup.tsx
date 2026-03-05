@@ -4,6 +4,7 @@ import { Mail, Lock, User as UserIcon, Sun, Moon } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "next-themes";
+import { toast } from "sonner";
 import codemateLogo from "@/assets/codemate-logo.png";
 
 const Signup = () => {
@@ -30,22 +31,55 @@ const Signup = () => {
   const [phone, setPhone] = useState("");
   const [linkedin, setLinkedin] = useState("");
   const [github, setGithub] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    await register({
-      name,
-      email,
-      password,
-      role,
-      department,
-      semester,
-      skills: skills.split(",").map((s) => s.trim()).filter(Boolean),
-      phone,
-      linkedin,
-      github,
-    });
-    navigate("/dashboard");
+    
+    // Validation
+    if (!name.trim()) {
+      toast.error("Please enter your full name");
+      return;
+    }
+    if (!email.trim()) {
+      toast.error("Please enter your email");
+      return;
+    }
+    if (!password.trim()) {
+      toast.error("Please enter a password (min 6 characters)");
+      return;
+    }
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+    if (!department.trim()) {
+      toast.error("Please select your department");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await register({
+        name,
+        email,
+        password,
+        role,
+        department,
+        semester,
+        skills: skills.split(",").map((s) => s.trim()).filter(Boolean),
+        phone,
+        linkedin,
+        github,
+      });
+      toast.success("Account created successfully! 🎉");
+      navigate("/dashboard");
+    } catch (err: any) {
+      console.error("Signup error:", err);
+      toast.error(err.message || "Failed to create account. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -145,7 +179,7 @@ const Signup = () => {
 
           <motion.form onSubmit={handleSignup} className="space-y-5" variants={formVariants}>
             <motion.div variants={fieldVariants}>
-              <label className="mb-1.5 block text-sm font-medium">Full Name</label>
+              <label className="mb-1.5 block text-sm font-medium">Full Name <span className="text-red-500">*</span></label>
               <div className="relative">
                 <UserIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <input
@@ -153,13 +187,14 @@ const Signup = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Jane Doe"
+                  required
                   disabled={demoMode}
                   className="h-11 w-full rounded-lg border border-border bg-card pl-10 pr-4 text-sm outline-none transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:scale-105"
                 />
               </div>
             </motion.div>
             <div>
-              <label className="mb-1.5 block text-sm font-medium">College Email</label>
+              <label className="mb-1.5 block text-sm font-medium">College Email <span className="text-red-500">*</span></label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <input
@@ -167,20 +202,23 @@ const Signup = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@college.edu"
+                  required
                   disabled={demoMode}
                   className="h-11 w-full rounded-lg border border-border bg-card pl-10 pr-4 text-sm outline-none transition-all focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
             </div>
             <div>
-              <label className="mb-1.5 block text-sm font-medium">Password</label>
+              <label className="mb-1.5 block text-sm font-medium">Password <span className="text-red-500">*</span></label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="password"
+                  placeholder="min 6 characters"
+                  minLength={6}
+                  required
                   disabled={demoMode}
                   className="h-11 w-full rounded-lg border border-border bg-card pl-10 pr-10 text-sm outline-none transition-all focus:outline-none focus:ring-2 focus:ring-primary"
                 />
@@ -188,12 +226,13 @@ const Signup = () => {
             </div>
             {/* additional profile fields */}
             <div>
-              <label className="mb-1.5 block text-sm font-medium">Department</label>
+              <label className="mb-1.5 block text-sm font-medium">Department <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
-                placeholder="CSE, Physics..."
+                placeholder="CSE, IT, ECE, ME..."
+                required
                 disabled={demoMode}
                 className="h-11 w-full rounded-lg border border-border bg-card px-4 text-sm outline-none transition-all focus:outline-none focus:ring-2 focus:ring-primary"
               />
@@ -235,7 +274,7 @@ const Signup = () => {
             </div>
             <div className="flex gap-4">
               <div className="flex-1">
-                <label className="mb-1.5 block text-sm font-medium">LinkedIn</label>
+                <label className="mb-1.5 block text-sm font-medium">LinkedIn <span className="text-xs text-muted-foreground">(optional)</span></label>
                 <input
                   type="url"
                   value={linkedin}
@@ -246,7 +285,7 @@ const Signup = () => {
                 />
               </div>
               <div className="flex-1">
-                <label className="mb-1.5 block text-sm font-medium">GitHub</label>
+                <label className="mb-1.5 block text-sm font-medium">GitHub <span className="text-xs text-muted-foreground">(optional)</span></label>
                 <input
                   type="url"
                   value={github}
@@ -259,11 +298,23 @@ const Signup = () => {
             </div>
             <motion.button
               type="submit"
-              className="h-11 w-full rounded-lg font-semibold text-primary-foreground gradient-cta bg-gradient-anim transition-transform hover:scale-105"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              disabled={isLoading}
+              className="h-11 w-full rounded-lg font-semibold text-primary-foreground gradient-cta bg-gradient-anim transition-transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              whileHover={!isLoading ? { scale: 1.05 } : {}}
+              whileTap={!isLoading ? { scale: 0.95 } : {}}
             >
-              Create Account
+              {isLoading ? (
+                <>
+                  <motion.div
+                    className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, linear: true }}
+                  />
+                  Creating...
+                </>
+              ) : (
+                "Create Account"
+              )}
             </motion.button>
           </motion.form>
 

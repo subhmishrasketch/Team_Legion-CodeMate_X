@@ -11,9 +11,7 @@ export interface Project {
   urgent: boolean;
   details: {
     technologies: string;
-    budget: string;
     difficulty: string;
-    estimatedHours: string;
     description: string;
   };
 }
@@ -32,9 +30,7 @@ export const projects: Project[] = [
     urgent: true,
     details: {
       technologies: "React, Python, TensorFlow, AR",
-      budget: "₹50,000",
       difficulty: "Hard",
-      estimatedHours: "400 hours",
       description: "Build a comprehensive campus navigation system with AR visualization and AI-powered route optimization."
     }
   },
@@ -51,9 +47,7 @@ export const projects: Project[] = [
     urgent: false,
     details: {
       technologies: "React, Node.js, IoT, D3.js",
-      budget: "₹30,000",
       difficulty: "Medium",
-      estimatedHours: "250 hours",
       description: "Create a real-time energy monitoring and analytics platform for global campus sustainability."
     }
   },
@@ -70,9 +64,7 @@ export const projects: Project[] = [
     urgent: false,
     details: {
       technologies: "Python, OpenCV, Flask, React",
-      budget: "₹40,000",
       difficulty: "Medium",
-      estimatedHours: "300 hours",
       description: "Develop an automated attendance system using facial recognition technology for educational institutions."
     }
   },
@@ -89,9 +81,7 @@ export const projects: Project[] = [
     urgent: false,
     details: {
       technologies: "React Native, Node.js, MongoDB, Stripe",
-      budget: "₹45,000",
       difficulty: "Medium",
-      estimatedHours: "350 hours",
       description: "Create a seamless mobile app for campus food ordering with payment integration and real-time tracking."
     }
   },
@@ -108,9 +98,7 @@ export const projects: Project[] = [
     urgent: true,
     details: {
       technologies: "TypeScript, PostgreSQL, React, IoT",
-      budget: "₹35,000",
       difficulty: "Easy",
-      estimatedHours: "200 hours",
       description: "Build a real-time seat reservation system for library management with QR-based verification."
     }
   },
@@ -127,9 +115,7 @@ export const projects: Project[] = [
     urgent: false,
     details: {
       technologies: "React, Node.js, Docker, ML/AI",
-      budget: "₹55,000",
       difficulty: "Hard",
-      estimatedHours: "450 hours",
       description: "Develop a collaborative code review platform with automated quality analysis and gamification elements."
     }
   }

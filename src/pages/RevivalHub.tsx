@@ -7,11 +7,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useState, useEffect } from "react";
 
 const defaultProjects = [
-  { title: "Virtual Lab Simulator", desc: "A VR-based virtual lab for physics and chemistry experiments with 3D molecule rendering and interactive simulations.", tags: ["Unity", "C#", "WebGL"], author: "Karan J.", reason: "Team disbanded", date: "Jan 2026", interested: 12, authorEmail: "karan@college.edu", authorPhone: "+91 99887 43210", github: "https://github.com/karanj/virtual-lab", technologies: "Unity, C#, WebGL, VR", budget: "₹75,000", difficulty: "Hard", skills: ["Unity", "C#", "3D Graphics", "VR"], status: "abandoned" },
-  { title: "College Carpooling App", desc: "Ride-sharing platform exclusively for college students with route matching, fare splitting, and safety features.", tags: ["React Native", "Node.js", "Maps API"], author: "Divya S.", reason: "Deadline missed", date: "Dec 2025", interested: 8, authorEmail: "divya@college.edu", authorPhone: "+91 91234 56789", github: "https://github.com/divyas/carpooling", technologies: "React Native, Node.js, Maps API, MongoDB", budget: "₹60,000", difficulty: "Medium", skills: ["React Native", "Node.js", "Maps API", "Payments"], status: "abandoned" },
-  { title: "Research Paper Finder", desc: "AI-powered tool to find and summarize relevant research papers with citation management and reading lists.", tags: ["Python", "NLP", "FastAPI"], author: "Amit P.", reason: "Scope too large", date: "Nov 2025", interested: 15, authorEmail: "amit@college.edu", authorPhone: "+91 88776 12345", github: "https://github.com/amitp/research-finder", technologies: "Python, NLP, FastAPI, TensorFlow", budget: "₹55,000", difficulty: "Hard", skills: ["Python", "NLP", "ML", "FastAPI"], status: "abandoned" },
-  { title: "Student Marketplace", desc: "Buy and sell used textbooks, lab equipment, and study materials within campus with verified student profiles.", tags: ["React", "Node.js", "Stripe", "MongoDB"], author: "Sneha K.", reason: "Team graduated", date: "Feb 2026", interested: 20, authorEmail: "sneha@college.edu", authorPhone: "+91 77665 44332", github: "https://github.com/snehak/marketplace", technologies: "React, Node.js, Stripe, MongoDB", budget: "₹80,000", difficulty: "Medium", skills: ["React", "Node.js", "Stripe", "Database Design"], status: "abandoned" },
-  { title: "AI Study Buddy", desc: "Personalized study companion that creates flashcards, quizzes, and summaries from lecture notes using AI.", tags: ["Python", "TensorFlow", "React", "GPT API"], author: "Rohan G.", reason: "Funding issues", date: "Jan 2026", interested: 25, authorEmail: "rohan@college.edu", authorPhone: "+91 66554 33221", github: "https://github.com/rohang/study-buddy", technologies: "Python, TensorFlow, React, GPT API", budget: "₹70,000", difficulty: "Hard", skills: ["Python", "ML", "React", "API Integration"], status: "abandoned" },
+  { title: "Virtual Lab Simulator", desc: "A VR-based virtual lab for physics and chemistry experiments with 3D molecule rendering and interactive simulations.", tags: ["Unity", "C#", "WebGL"], author: "Karan J.", reason: "Team disbanded", date: "Jan 2026", interested: 12, authorEmail: "karan@college.edu", authorPhone: "+91 99887 43210", github: "https://github.com/karanj/virtual-lab", technologies: "Unity, C#, WebGL, VR", difficulty: "Hard", skills: ["Unity", "C#", "3D Graphics", "VR"], status: "abandoned" },
+  { title: "College Carpooling App", desc: "Ride-sharing platform exclusively for college students with route matching, fare splitting, and safety features.", tags: ["React Native", "Node.js", "Maps API"], author: "Divya S.", reason: "Deadline missed", date: "Dec 2025", interested: 8, authorEmail: "divya@college.edu", authorPhone: "+91 91234 56789", github: "https://github.com/divyas/carpooling", technologies: "React Native, Node.js, Maps API, MongoDB", difficulty: "Medium", skills: ["React Native", "Node.js", "Maps API", "Payments"], status: "abandoned" },
+  { title: "Research Paper Finder", desc: "AI-powered tool to find and summarize relevant research papers with citation management and reading lists.", tags: ["Python", "NLP", "FastAPI"], author: "Amit P.", reason: "Scope too large", date: "Nov 2025", interested: 15, authorEmail: "amit@college.edu", authorPhone: "+91 88776 12345", github: "https://github.com/amitp/research-finder", technologies: "Python, NLP, FastAPI, TensorFlow", difficulty: "Hard", skills: ["Python", "NLP", "ML", "FastAPI"], status: "abandoned" },
+  { title: "Student Marketplace", desc: "Buy and sell used textbooks, lab equipment, and study materials within campus with verified student profiles.", tags: ["React", "Node.js", "Stripe", "MongoDB"], author: "Sneha K.", reason: "Team graduated", date: "Feb 2026", interested: 20, authorEmail: "sneha@college.edu", authorPhone: "+91 77665 44332", github: "https://github.com/snehak/marketplace", technologies: "React, Node.js, Stripe, MongoDB", difficulty: "Medium", skills: ["React", "Node.js", "Stripe", "Database Design"], status: "abandoned" },
+  { title: "AI Study Buddy", desc: "Personalized study companion that creates flashcards, quizzes, and summaries from lecture notes using AI.", tags: ["Python", "TensorFlow", "React", "GPT API"], author: "Rohan G.", reason: "Funding issues", date: "Jan 2026", interested: 25, authorEmail: "rohan@college.edu", authorPhone: "+91 66554 33221", github: "https://github.com/rohang/study-buddy", technologies: "Python, TensorFlow, React, GPT API", difficulty: "Hard", skills: ["Python", "ML", "React", "API Integration"], status: "abandoned" },
 ];
 
 const ALL_SKILLS = ["React", "Node.js", "Python", "Java", "TypeScript", "MongoDB", "PostgreSQL", "Flutter", "ML/AI", "IoT", "DevOps", "UI/UX", "Docker", "TensorFlow", "Figma"];
@@ -23,7 +23,7 @@ const RevivalHub = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
     title: "", desc: "", reason: "Team size issue", tags: [] as string[], 
-    github: "", technologies: "", budget: "", difficulty: "Medium", skills: [] as string[]
+    github: "", technologies: "", difficulty: "Medium", skills: [] as string[]
   });
 
   useEffect(() => {
@@ -54,7 +54,6 @@ const RevivalHub = () => {
       authorPhone: user?.phone || "+91 00000 00000",
       github: formData.github,
       technologies: formData.technologies || formData.tags.join(", "),
-      budget: formData.budget || "₹50,000",
       difficulty: formData.difficulty,
       skills: formData.skills.length > 0 ? formData.skills : formData.tags,
       date: new Date().toLocaleDateString("en-US", { year: "numeric", month: "short" }),
@@ -68,7 +67,7 @@ const RevivalHub = () => {
       list.push(newProject);
       localStorage.setItem("abandonedProjects", JSON.stringify(list));
       setProjects([newProject, ...projects]);
-      setFormData({ title: "", desc: "", reason: "Team size issue", tags: [], github: "", technologies: "", budget: "", difficulty: "Medium", skills: [] });
+      setFormData({ title: "", desc: "", reason: "Team size issue", tags: [], github: "", technologies: "", difficulty: "Medium", skills: [] });
       setShowAddForm(false);
       toast.success("Project added to Revival Hub! 🎉");
     } catch (e) {
@@ -168,9 +167,9 @@ const RevivalHub = () => {
                 />
                 <input
                   type="text"
-                  placeholder="Budget (e.g., ₹50,000)"
-                  value={formData.budget}
-                  onChange={(e) => setFormData({...formData, budget: e.target.value})}
+                  placeholder="Technologies (optional)"
+                  value={formData.technologies}
+                  onChange={(e) => setFormData({...formData, technologies: e.target.value})}
                   className="rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none"
                 />
               </div>
@@ -351,14 +350,10 @@ const RevivalHub = () => {
                     <p className="font-semibold text-foreground">{selectedProject.difficulty}</p>
                   </div>
                   <div className="rounded-lg bg-primary/5 border border-primary/20 p-4">
-                    <p className="text-xs text-muted-foreground font-semibold mb-1">Budget</p>
-                    <p className="font-semibold text-foreground">{selectedProject.budget}</p>
-                  </div>
-                  <div className="rounded-lg bg-primary/5 border border-primary/20 p-4">
                     <p className="text-xs text-muted-foreground font-semibold mb-1">Technologies</p>
                     <p className="text-sm font-medium">{selectedProject.technologies}</p>
                   </div>
-                  <div className="rounded-lg bg-primary/5 border border-primary/20 p-4">
+                  <div className="rounded-lg bg-primary/5 border border-primary/20 p-4 col-span-2">
                     <p className="text-xs text-muted-foreground font-semibold mb-1">Reason Abandoned</p>
                     <p className="text-sm font-medium">{selectedProject.reason}</p>
                   </div>

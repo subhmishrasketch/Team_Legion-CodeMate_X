@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 
 type Role = "student" | "admin";
 
@@ -13,6 +13,7 @@ interface User {
   phone?: string;
   linkedin?: string;
   github?: string;
+  photo?: string; // base64 or URL
 }
 
 interface AuthContextType {
@@ -60,30 +61,80 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [demoMode, setDemoMode] = useState(false);
 
+  // restore session if available
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("currentUser");
+      if (saved) {
+        setUser(JSON.parse(saved));
+      }
+    } catch (e) {
+      console.warn("failed to restore session", e);
+    }
+  }, []);
+
+
   const login = async (
     role: Role,
     credentials?: { email: string; password: string }
   ) => {
     if (demoMode) {
       // pick one of the canned demo users
-      setUser(DEMO_USERS[role]);
+      const demoUser = DEMO_USERS[role];
+      setUser(demoUser);
+      localStorage.setItem("currentUser", JSON.stringify(demoUser));
     } else {
-      // real authentication would go here; for now just stub it out.
-      // e.g. const resp = await fetch('/api/login', { method: 'POST', body: JSON.stringify(credentials) });
-      // const data = await resp.json();
-      // setUser(data.user);
-      console.warn("Real login not implemented – received", { role, credentials });
-      // simulate a user for demo purposes so app doesn't break
-      setUser({
-        name: credentials?.email ?? "",
-        email: credentials?.email ?? "",
-        role,
-        initials: "",
-        department: "",
-      });
+      // NOTE: in a production setup you would call your backend API,
+      // e.g. POST /api/login.  Here we stub out the HTTP request so
+      // demo mode continues to work but the skeleton shows where the
+      // MongoDB-connected server would be used.
+
+      if (!credentials) {
+        console.error("No credentials provided");
+        throw new Error("Email and password required");
+      }
+
+      try {
+        // Example fetch: replace URL with your real auth endpoint.
+        const resp = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: credentials.email, password: credentials.password }),
+        });
+        if (!resp.ok) {
+          const errText = await resp.text();
+          throw new Error(errText || "Login failed");
+        }
+        const data = await resp.json();
+        setUser(data.user);
+      } catch (err) {
+        // fallback to localStorage logic so the app still works offline
+        console.warn("Remote login failed, falling back to local storage", err);
+        try {
+          const usersKey = "registeredUsers";
+          const existingUsers = localStorage.getItem(usersKey);
+          const allUsers = existingUsers ? JSON.parse(existingUsers) : [];
+          const foundUser = allUsers.find(
+            (u: any) => u.email === credentials.email && u.password === credentials.password
+          );
+          if (foundUser) {
+            const { password, ...userWithoutPassword } = foundUser;
+            setUser(userWithoutPassword);
+            localStorage.setItem("currentUser", JSON.stringify(userWithoutPassword));
+          } else {
+            throw err; // rethrow original
+          }
+        } catch (inner) {
+          console.error("Login error:", inner);
+          throw inner;
+        }
+      }
     }
   };
-  const logout = () => setUser(null);
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem("currentUser");
+  };
 
   const register = async (data: Partial<User> & { password: string }) => {
     if (demoMode) {
@@ -107,15 +158,70 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         github: data.github,
       });
     } else {
-      // real registration API would go here
-      console.warn("Real register not implemented", data);
-      setUser({
-        name: data.name || "",
-        email: data.email || "",
-        role: data.role || "student",
-        initials: data.name ? data.name.split(" ").map((s) => s[0]).join("") : "",
-        department: data.department || "",
-      });
+      // real registration - save to localStorage
+      try {
+        // First attempt remote registration via API (Mongo backend)
+        const resp = await fetch("/api/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        if (!resp.ok) {
+          const errText = await resp.text();
+          throw new Error(errText || "Registration failed");
+        }
+        const result = await resp.json();
+        setUser(result.user);
+        // optionally you could sync this user into localStorage as a cache
+        return;
+      } catch (apiErr) {
+        console.warn("Remote register failed, falling back to local storage", apiErr);
+      }
+
+      try {
+        const usersKey = "registeredUsers";
+        const existingUsers = localStorage.getItem(usersKey);
+        const allUsers = existingUsers ? JSON.parse(existingUsers) : [];
+        
+        // Check if email already exists
+        if (allUsers.find((u: any) => u.email === data.email)) {
+          throw new Error("Email already registered");
+        }
+
+        // Create initials
+        const initials = data.name
+          ? data.name
+              .split(" ")
+              .map((s) => s[0].toUpperCase())
+              .join("")
+          : "";
+
+        // Create new user object with password
+        const newUser = {
+          name: data.name || "",
+          email: data.email || "",
+          role: data.role || "student",
+          initials,
+          department: data.department || "",
+          semester: data.semester,
+          skills: data.skills,
+          phone: data.phone || "",
+          linkedin: data.linkedin || "",
+          github: data.github || "",
+          password: data.password, // Store password (in production, this would be hashed)
+        };
+
+        // Save to localStorage
+        allUsers.push(newUser);
+        localStorage.setItem(usersKey, JSON.stringify(allUsers));
+
+        // Set user in state (without password)
+        const { password, ...userWithoutPassword } = newUser;
+        setUser(userWithoutPassword);
+      } catch (err) {
+        console.error("Registration error:", err);
+        throw err;
+      }
     }
   };
 
@@ -130,6 +236,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setDemoMode,
         login,
         logout,
+        register,
         updateProfile,
       }}
     >

@@ -1,4 +1,4 @@
-import { Bell, Search, User, LogOut, Sun, Moon, X } from "lucide-react";
+import { Bell, Search, User, LogOut, Sun, Moon, X, Zap } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/contexts/AuthContext";
@@ -7,6 +7,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { motion, AnimatePresence } from "framer-motion";
+import { getTestUsersForSelector, switchTestUser } from "@/lib/testUsers";
 
 const SEARCHABLE = [
   { label: "Dashboard", path: "/dashboard", tags: "home overview stats" },
@@ -34,9 +35,11 @@ export function AppHeader() {
   const [showProfile, setShowProfile] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearch, setShowSearch] = useState(false);
+  const [showTestUsers, setShowTestUsers] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
+  const testUsersRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,6 +47,7 @@ export function AppHeader() {
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) setShowNotifs(false);
       if (profileRef.current && !profileRef.current.contains(e.target as Node)) setShowProfile(false);
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) setShowSearch(false);
+      if (testUsersRef.current && !testUsersRef.current.contains(e.target as Node)) setShowTestUsers(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -138,6 +142,54 @@ export function AppHeader() {
         >
           <Search className="h-5 w-5" />
         </motion.button>
+
+        {/* Test Users Switcher (Dev only) */}
+        {import.meta.env.DEV && (
+          <div ref={testUsersRef} className="relative">
+            <motion.button 
+              onClick={() => setShowTestUsers(!showTestUsers)}
+              className="relative flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-all hover:bg-amber-500/20 hover:text-amber-600 dark:hover:text-amber-500"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              title="Test Users (Dev)"
+            >
+              <Zap className="h-5 w-5" />
+            </motion.button>
+            <AnimatePresence>
+              {showTestUsers && (
+                <motion.div 
+                  initial={{ opacity: 0, y: -12, scale: 0.92 }} 
+                  animate={{ opacity: 1, y: 0, scale: 1 }} 
+                  exit={{ opacity: 0, y: -12, scale: 0.92 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  className="absolute right-0 top-11 w-56 rounded-lg border border-amber-500/30 bg-card/95 backdrop-blur-md shadow-2xl z-50 overflow-hidden"
+                >
+                  <div className="border-b border-amber-500/20 px-3 py-2 bg-amber-500/10">
+                    <p className="text-xs font-semibold text-amber-700 dark:text-amber-400">🧪 TEST USERS</p>
+                  </div>
+                  <div className="max-h-64 overflow-y-auto space-y-1 p-1">
+                    {getTestUsersForSelector().map((user) => (
+                      <motion.button 
+                        key={user.email}
+                        onClick={() => {
+                          switchTestUser(user.email);
+                          setShowTestUsers(false);
+                        }}
+                        className="flex w-full items-start gap-2 rounded-md px-3 py-2 text-xs text-left hover:bg-amber-500/20 transition-colors"
+                        whileHover={{ x: 4 }}
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-foreground truncate">{user.name}</p>
+                          <p className="text-muted-foreground truncate">{user.email}</p>
+                        </div>
+                      </motion.button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
 
         {/* Notifications */}
         <div ref={notifRef} className="relative">

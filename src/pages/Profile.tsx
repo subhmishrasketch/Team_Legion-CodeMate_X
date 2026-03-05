@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { User, Mail, Phone, Github, Linkedin, BookOpen, GraduationCap, Wrench, Save, RefreshCw, Calendar } from "lucide-react";
+import { User, Mail, Phone, Github, Linkedin, BookOpen, GraduationCap, Wrench, Save, RefreshCw, Calendar, Camera } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
@@ -24,13 +24,26 @@ const Profile = () => {
   const [github, setGithub] = useState(user?.github || "");
   const [skills, setSkills] = useState<string[]>(user?.skills || []);
   const [adopted, setAdopted] = useState<any[]>([]);
+  const [photo, setPhoto] = useState(user?.photo || "");
 
   const toggleSkill = (skill: string) => {
     setSkills((prev) => prev.includes(skill) ? prev.filter((s) => s !== skill) : [...prev, skill]);
   };
 
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64 = reader.result as string;
+        setPhoto(base64);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSave = () => {
-    updateProfile({ name, department, semester: parseInt(semester) || undefined, phone, linkedin, github, skills });
+    updateProfile({ name, department, semester: parseInt(semester) || undefined, phone, linkedin, github, skills, photo });
     toast.success("Profile updated successfully! ✅");
   };
 
@@ -50,10 +63,18 @@ const Profile = () => {
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-2xl space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
-          <motion.div whileHover={{ scale: 1.05 }}>
+          <motion.div whileHover={{ scale: 1.05 }} className="relative">
             <Avatar className="h-20 w-20">
-              <AvatarFallback className="gradient-primary text-2xl font-bold text-primary-foreground">{user?.initials}</AvatarFallback>
+              {photo ? (
+                <img src={photo} alt="Profile" className="h-full w-full object-cover rounded-full" />
+              ) : (
+                <AvatarFallback className="gradient-primary text-2xl font-bold text-primary-foreground">{user?.initials}</AvatarFallback>
+              )}
             </Avatar>
+            <label htmlFor="photo-upload" className="absolute bottom-0 right-0 p-1 bg-primary rounded-full cursor-pointer hover:bg-primary/80 transition-colors">
+              <Camera className="h-3 w-3 text-primary-foreground" />
+            </label>
+            <input id="photo-upload" type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
           </motion.div>
           <div>
             <h1 className="font-heading text-2xl font-bold">{user?.name}</h1>

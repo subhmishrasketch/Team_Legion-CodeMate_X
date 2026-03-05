@@ -2,9 +2,19 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { useNotifications } from "@/contexts/NotificationContext";
 import { Bell, Check } from "lucide-react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const Notifications = () => {
   const { notifications, markAsRead, markAllRead } = useNotifications();
+  const navigate = useNavigate();
+
+  const handleNotificationClick = (n: any) => {
+    markAsRead(n.id);
+    if (n.type === "warning" && n.projectTitle) {
+      // For join requests, navigate to my-projects
+      navigate("/my-projects");
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -28,16 +38,19 @@ const Notifications = () => {
             notifications.map((n, i) => (
               <button
                 key={n.id}
-                onClick={() => markAsRead(n.id)}
+                onClick={() => handleNotificationClick(n)}
                 className={`flex w-full items-start gap-3 px-5 py-4 text-left transition-colors hover:bg-muted/50 ${
                   i < notifications.length - 1 ? "border-b border-border" : ""
                 } ${!n.read ? "bg-primary/5" : ""}`}
               >
                 <div className={`mt-1 h-2 w-2 shrink-0 rounded-full ${!n.read ? "bg-primary" : "bg-transparent"}`} />
-                <div>
+                <div className="flex-1">
                   <p className="font-semibold text-sm">{n.title}</p>
                   <p className="text-sm text-muted-foreground">{n.message}</p>
                   <p className="mt-1 text-xs text-muted-foreground">{n.time}</p>
+                  {n.type === "warning" && n.projectTitle && (
+                    <p className="mt-1 text-xs text-primary">Click to manage</p>
+                  )}
                 </div>
               </button>
             ))
