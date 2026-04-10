@@ -118,10 +118,10 @@ const AdminDashboard = () => {
             </Badge>
           </motion.div>
           <h1 className="font-heading text-4xl md:text-5xl font-bold mb-3">
-            Welcome, <span className="text-gradient">{user?.name}</span> 🎓
+            Welcome, <span className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 dark:from-cyan-400 dark:via-blue-400 dark:to-purple-400 bg-clip-text text-transparent">{user?.name}</span> 🎓
           </h1>
           <p className="text-lg text-muted-foreground/90 max-w-2xl">
-            Campus project & event overview with intelligent analytics. Monitor all activities and engagement.
+            Campus project & event overview with intelligent analytics. Monitor all activities and engagement with Codemate X.
           </p>
           <motion.div initial={{ width: 0 }} animate={{ width: "120px" }} transition={{ delay: 0.5, duration: 0.8 }} className="mt-6 h-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 rounded-full" />
         </div>

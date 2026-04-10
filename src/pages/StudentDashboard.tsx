@@ -21,16 +21,96 @@ const stats = [
 
 // User profiles database
 const userProfiles: Record<string, any> = {
-  "Priya Sharma": { avatar: "P", email: "priya@college.edu", phone: "+91 99887 11223", department: "CSE", semester: "7", skills: ["React", "Python", "TensorFlow", "AR", "UI/UX Design"], github: "https://github.com/priya", linkedin: "https://linkedin.com/in/priya", activityPoints: 285, pastProjects: 8, connections: 42, followers: 234, likes: 512, avgCapability: 92 },
-  "Rahul Mehta": { avatar: "R", email: "rahul@college.edu", phone: "+91 98765 44332", department: "CSE", semester: "6", skills: ["React", "Node.js", "IoT", "D3.js", "System Design"], github: "https://github.com/rahul", linkedin: "https://linkedin.com/in/rahul", activityPoints: 215, pastProjects: 6, connections: 38, followers: 189, likes: 456, avgCapability: 88 },
-  "Neha Rao": { avatar: "N", email: "neha@college.edu", phone: "+91 91234 56789", department: "IT", semester: "7", skills: ["Python", "OpenCV", "Flask", "React", "ML"], github: "https://github.com/neha", linkedin: "https://linkedin.com/in/neha", activityPoints: 198, pastProjects: 5, connections: 35, followers: 167, likes: 389, avgCapability: 85 },
-  "Vikram Patel": { avatar: "V", email: "vikram@college.edu", phone: "+91 88776 55443", department: "CSE", semester: "5", skills: ["React Native", "Node.js", "MongoDB", "Stripe", "AWS"], github: "https://github.com/vikram", linkedin: "https://linkedin.com/in/vikram", activityPoints: 156, pastProjects: 4, connections: 28, followers: 145, likes: 321, avgCapability: 80 },
-  "Ananya Iyer": { avatar: "A", email: "ananya@college.edu", phone: "+91 77665 44332", department: "IT", semester: "8", skills: ["TypeScript", "PostgreSQL", "React", "IoT", "DevOps"], github: "https://github.com/ananya", linkedin: "https://linkedin.com/in/ananya", activityPoints: 312, pastProjects: 9, connections: 51, followers: 298, likes: 623, avgCapability: 95 },
-  "Rohan Gupta": { avatar: "R", email: "rohan@college.edu", phone: "+91 66554 33221", department: "CSE", semester: "6", skills: ["React", "Node.js", "Docker", "ML/AI", "System Architecture"], github: "https://github.com/rohan", linkedin: "https://linkedin.com/in/rohan", activityPoints: 241, pastProjects: 7, connections: 44, followers: 212, likes: 478, avgCapability: 90 },
+  "Priya Sharma": { avatar: "P", email: "priya@college.edu", phone: "+91 99887 11223", department: "CSE", semester: "7", skills: ["React", "Python", "TensorFlow", "AR", "UI/UX Design"], github: "https://github.com/priya", linkedin: "https://linkedin.com/in/priya", activityPoints: 285, pastProjects: 8, connections: 42, followers: 234, following: 89, likes: 512, avgCapability: 92 },
+  "Rahul Mehta": { avatar: "R", email: "rahul@college.edu", phone: "+91 98765 44332", department: "CSE", semester: "6", skills: ["React", "Node.js", "IoT", "D3.js", "System Design"], github: "https://github.com/rahul", linkedin: "https://linkedin.com/in/rahul", activityPoints: 215, pastProjects: 6, connections: 38, followers: 189, following: 76, likes: 456, avgCapability: 88 },
+  "Neha Rao": { avatar: "N", email: "neha@college.edu", phone: "+91 91234 56789", department: "IT", semester: "7", skills: ["Python", "OpenCV", "Flask", "React", "ML"], github: "https://github.com/neha", linkedin: "https://linkedin.com/in/neha", activityPoints: 198, pastProjects: 5, connections: 35, followers: 167, following: 62, likes: 389, avgCapability: 85 },
+  "Vikram Patel": { avatar: "V", email: "vikram@college.edu", phone: "+91 88776 55443", department: "CSE", semester: "5", skills: ["React Native", "Node.js", "MongoDB", "Stripe", "AWS"], github: "https://github.com/vikram", linkedin: "https://linkedin.com/in/vikram", activityPoints: 156, pastProjects: 4, connections: 28, followers: 145, following: 51, likes: 321, avgCapability: 80 },
+  "Ananya Iyer": { avatar: "A", email: "ananya@college.edu", phone: "+91 77665 44332", department: "IT", semester: "8", skills: ["TypeScript", "PostgreSQL", "React", "IoT", "DevOps"], github: "https://github.com/ananya", linkedin: "https://linkedin.com/in/ananya", activityPoints: 312, pastProjects: 9, connections: 51, followers: 298, following: 105, likes: 623, avgCapability: 95 },
+  "Rohan Gupta": { avatar: "R", email: "rohan@college.edu", phone: "+91 66554 33221", department: "CSE", semester: "6", skills: ["React", "Node.js", "Docker", "ML/AI", "System Architecture"], github: "https://github.com/rohan", linkedin: "https://linkedin.com/in/rohan", activityPoints: 241, pastProjects: 7, connections: 44, followers: 212, following: 81, likes: 478, avgCapability: 90 },
 };
 
-// Use shared projects from lib/projects
-const projects = sharedProjects;
+const projects = [
+  {
+    id: "proj-1",
+    title: "AI-Powered Campus Navigator",
+    desc: "An intelligent campus navigation system using computer vision and AR to help new students find classrooms, labs, and facilities. Features real-time routing, indoor mapping, and AR-based wayfinding.",
+    tags: ["React", "Python", "TensorFlow", "AR"],
+    members: "3/5", deadline: "Mar 15, 2026", match: 92,
+    author: "Priya Sharma", authorEmail: "priya@college.edu", authorPhone: "+91 99887 11223",
+    urgent: true,
+    status: "Active",
+    github: "https://github.com/codemate/campus-navigator",
+    details: {
+      technologies: "React, Python, TensorFlow, AR",
+      difficulty: "Hard",
+      description: "Build a comprehensive campus navigation system with AR visualization and AI-powered route optimization."
+    }
+  },
+  {
+    id: "proj-2",
+    title: "Green Energy Dashboard",
+    desc: "Real-time monitoring dashboard for campus solar panels and energy consumption with predictive analytics and alerts.",
+    tags: ["React", "Node.js", "IoT", "D3.js"],
+    members: "2/4", deadline: "Apr 01, 2026", match: 78,
+    author: "Rahul Mehta", authorEmail: "rahul@college.edu", authorPhone: "+91 98765 44332",
+    urgent: false,
+    status: "Active",
+    github: "https://github.com/codemate/energy-dashboard",
+    details: {
+      technologies: "React, Node.js, IoT, D3.js",
+      difficulty: "Medium",
+      description: "Create a real-time energy monitoring and analytics platform for global campus sustainability."
+    }
+  },
+  {
+    id: "proj-3",
+    title: "Smart Attendance System",
+    desc: "Face recognition based attendance system for lecture halls with real-time analytics and automatic report generation.",
+    tags: ["Python", "OpenCV", "Flask", "React"],
+    members: "1/3", deadline: "Mar 28, 2026", match: 85,
+    author: "Neha Rao", authorEmail: "neha@college.edu", authorPhone: "+91 91234 56789",
+    urgent: false,
+    status: "Planning",
+    github: "https://github.com/codemate/smart-attendance",
+    details: {
+      technologies: "Python, OpenCV, Flask, React",
+      difficulty: "Medium",
+      description: "Develop an automated attendance system using facial recognition technology for educational institutions."
+    }
+  },
+  {
+    id: "proj-4",
+    title: "Campus Food Ordering App",
+    desc: "Mobile-first food ordering platform for campus canteens with pre-order, QR payments, and live order tracking.",
+    tags: ["React Native", "Node.js", "MongoDB", "Stripe"],
+    members: "2/4", deadline: "Apr 15, 2026", match: 72,
+    author: "Vikram Patel", authorEmail: "vikram@college.edu", authorPhone: "+91 88776 55443",
+    urgent: false,
+    status: "On Hold",
+    github: "https://github.com/codemate/food-ordering",
+    details: {
+      technologies: "React Native, Node.js, MongoDB, Stripe",
+      difficulty: "Medium",
+      description: "Create a seamless mobile app for campus food ordering with payment integration and real-time tracking."
+    }
+  },
+  {
+    id: "proj-5",
+    title: "Library Seat Booking System",
+    desc: "Web app to check real-time seat availability in the library and book seats with QR-based check-in.",
+    tags: ["TypeScript", "PostgreSQL", "React", "IoT"],
+    members: "1/3", deadline: "Apr 20, 2026", match: 88,
+    author: "Ananya Iyer", authorEmail: "ananya@college.edu", authorPhone: "+91 77665 44332",
+    urgent: true,
+    status: "Active",
+    github: "https://github.com/codemate/library-booking",
+    details: {
+      technologies: "TypeScript, PostgreSQL, React, IoT",
+      difficulty: "Easy",
+      description: "Build a real-time seat reservation system for library management with QR-based verification."
+    }
+  },
+];
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
 const item = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
@@ -44,14 +124,24 @@ const StudentDashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
   const [selectedSkillFilter, setSelectedSkillFilter] = useState<string[]>([]);
+  const [showWelcome, setShowWelcome] = useState(true);
+  const [showActivityPointsModal, setShowActivityPointsModal] = useState(false);
   const [realStats, setRealStats] = useState([
     { label: "Active Projects", value: "3", sub: "2 pending requests", icon: FolderOpen, color: "text-primary" },
     { label: "Team Requests", value: "8", sub: "5 pending", icon: Users, color: "text-warning" },
-    { label: "Activity Points", value: "0", sub: "0 activities", icon: Trophy, color: "text-success" },
+    { label: "Activity Points", value: "120", sub: "+20 this month", icon: Trophy, color: "text-success" },
     { label: "Skill Matches", value: "12", sub: "3 new today", icon: TrendingUp, color: "text-primary" },
   ]);
   const [teamRequests, setTeamRequests] = useState<any[]>([]);
   const [activeProjects, setActiveProjects] = useState<any[]>([]);
+
+  // Hide welcome block after 10 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowWelcome(false);
+    }, 10000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Filter projects based on search, difficulty, and skills
   const filteredProjects = projects.filter(p => {
@@ -64,16 +154,9 @@ const StudentDashboard = () => {
   });
 
   useEffect(() => {
-    // Update activity points from user data
-    if (user?.activityPoints) {
-      setRealStats(prev => [
-        prev[0],
-        prev[1],
-        { ...prev[2], value: user.activityPoints.toString(), sub: `${user.activityHistory?.length || 0} activities` },
-        prev[3],
-      ]);
-    }
-  }, [user?.activityPoints, user?.activityHistory?.length]);
+    // Activity points are shown from realStats initialization
+    // No need to update from user data as these properties don't exist on User type
+  }, []);
 
   useEffect(() => {
     // Initialize sample data for first-time users
@@ -124,8 +207,8 @@ const StudentDashboard = () => {
         },
         { 
           label: "Activity Points", 
-          value: user?.activityPoints?.toString() || "0", 
-          sub: `${user?.activityHistory?.length || 0} activities`, 
+          value: realStats[2]?.value || "0", 
+          sub: "0 activities", 
           icon: Trophy, 
           color: "text-success" 
         },
@@ -173,67 +256,70 @@ const StudentDashboard = () => {
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-8 min-h-screen">
       {/* Premium Header with Modern Gradient Design */}
-      <motion.div 
-        variants={item}
-        className="relative min-h-60 rounded-3xl border border-border/50 bg-gradient-to-br dark:from-slate-800/50 dark:via-slate-900/50 dark:to-slate-950/50 from-gradient-to-br from-slate-50 via-slate-100 to-slate-50 p-12 overflow-hidden backdrop-blur-sm"
-        whileHover={{ borderColor: "rgba(139, 92, 246, 0.3)" }}
-        transition={{ duration: 0.3 }}
-      >
-        {/* Animated background elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <AnimatePresence>
+        {showWelcome && (
           <motion.div 
-            animate={{ y: [0, -20, 0], x: [0, 10, 0] }}
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-0 left-1/4 w-80 h-80 dark:bg-blue-500/15 bg-blue-300/25 rounded-full blur-3xl"
-          />
-          <motion.div 
-            animate={{ y: [0, 20, 0], x: [0, -10, 0] }}
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute bottom-0 right-1/4 w-80 h-80 dark:bg-purple-500/15 bg-purple-300/25 rounded-full blur-3xl"
-          />
-          <motion.div 
-            animate={{ rotate: 360, scale: [1, 1.1, 1] }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-0 opacity-0 group-hover:opacity-5 dark:bg-gradient-to-br dark:from-blue-500/20 dark:to-purple-500/20 pointer-events-none"
-          />
-        </div>
+            variants={item}
+            initial={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5 }}
+            className="relative min-h-60 rounded-3xl border border-border/50 bg-gradient-to-br dark:from-slate-800/50 dark:via-slate-900/50 dark:to-slate-950/50 from-gradient-to-br from-slate-50 via-slate-100 to-slate-50 p-12 overflow-hidden backdrop-blur-sm"
+            whileHover={{ borderColor: "rgba(139, 92, 246, 0.3)" }}
+          >
+            {/* Animated background elements */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <motion.div 
+                animate={{ y: [0, -20, 0], x: [0, 10, 0] }}
+                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute top-0 left-1/4 w-80 h-80 dark:bg-blue-500/15 bg-blue-300/25 rounded-full blur-3xl"
+              />
+              <motion.div 
+                animate={{ y: [0, 20, 0], x: [0, -10, 0] }}
+                transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute bottom-0 right-1/4 w-80 h-80 dark:bg-purple-500/15 bg-purple-300/25 rounded-full blur-3xl"
+              />
+            </div>
 
-        <div className="relative z-10">
-          <motion.div variants={item} className="mb-4 inline-block">
-            <motion.div
-              animate={{ y: [0, -8, 0], rotate: [0, 2, -2, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <Badge className="gap-2 bg-gradient-to-r dark:from-blue-400/30 dark:to-purple-400/30 from-blue-100 to-purple-100 dark:border-blue-400/50 border-blue-400/30 dark:text-blue-200 text-blue-700">
-                <motion.span animate={{ rotate: [0, 360] }} transition={{ duration: 3, repeat: Infinity }}>
-                  ✨
-                </motion.span>
-                <span>Welcome to Your Dashboard</span>
-              </Badge>
-            </motion.div>
+            <div className="relative z-10">
+              <motion.div variants={item} className="mb-4 inline-block">
+                <motion.div>
+                  <Badge className="gap-2 bg-gradient-to-r dark:from-blue-400/30 dark:to-purple-400/30 from-blue-100 to-purple-100 dark:border-blue-400/50 border-blue-400/30 dark:text-blue-200 text-blue-700">
+                    <motion.span animate={{ rotate: [0, 360] }} transition={{ duration: 3, repeat: Infinity }}>
+                      ✨
+                    </motion.span>
+                    <span>Welcome to Your Dashboard</span>
+                  </Badge>
+                </motion.div>
+              </motion.div>
+              <h1 className="font-heading text-4xl md:text-5xl font-bold mb-3 dark:text-white text-slate-900">
+                Welcome back, <span className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 dark:from-cyan-400 dark:via-blue-400 dark:to-purple-400 bg-clip-text text-transparent">{user?.name?.split(" ")[0]}</span> 👋
+              </h1>
+              <p className="text-lg dark:text-muted-foreground/90 text-slate-600 max-w-2xl">
+                Find your next team, collaborate on amazing projects, and grow your skills with Codemate X community.
+              </p>
+              <motion.div initial={{ width: 0 }} animate={{ width: "120px" }} transition={{ delay: 0.5, duration: 0.8 }} className="mt-6 h-1 bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 dark:from-cyan-400 dark:via-blue-400 dark:to-purple-400 rounded-full" />
+            </div>
           </motion.div>
-          <h1 className="font-heading text-4xl md:text-5xl font-bold mb-3 dark:text-white text-slate-900">
-            Welcome back, <span className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 dark:from-cyan-400 dark:via-blue-400 dark:to-purple-400 bg-clip-text text-transparent">{user?.name?.split(" ")[0]}</span> 👋
-          </h1>
-          <p className="text-lg dark:text-muted-foreground/90 text-slate-600 max-w-2xl">
-            Find your next team, collaborate on amazing projects, and grow your skills with CodeMate X community.
-          </p>
-          <motion.div initial={{ width: 0 }} animate={{ width: "120px" }} transition={{ delay: 0.5, duration: 0.8 }} className="mt-6 h-1 bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 dark:from-cyan-400 dark:via-blue-400 dark:to-purple-400 rounded-full" />
-        </div>
-      </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Enhanced Stats */}
       <motion.div variants={item} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {realStats.map((s, idx) => (
           <motion.div 
             key={s.label} 
-            onClick={() => setSelectedStat(s.label)}
+            onClick={() => {
+              if (s.label === "Activity Points") {
+                setShowActivityPointsModal(true);
+              }
+              setSelectedStat(s.label);
+            }}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.12, duration: 0.6, type: "spring", stiffness: 100 }}
             whileHover={{ y: -8, boxShadow: "0 20px 40px rgba(0,0,0,0.25)", transition: { duration: 0.3 } }}
             whileTap={{ scale: 0.98 }}
-            className="relative overflow-hidden rounded-2xl border dark:border-border/50 border-cyan-100 dark:bg-gradient-to-br dark:from-card dark:to-card/50 bg-gradient-to-br from-cyan-50 to-blue-50 p-6 transition-all cursor-pointer backdrop-blur-sm group hover:dark:border-cyan-500/30 hover:border-cyan-300">
+            className={`relative overflow-hidden rounded-2xl border dark:border-border/50 border-cyan-100 dark:bg-gradient-to-br dark:from-card dark:to-card/50 bg-gradient-to-br from-cyan-50 to-blue-50 p-6 transition-all ${s.label === "Activity Points" ? "cursor-pointer" : ""} backdrop-blur-sm group hover:dark:border-cyan-500/30 hover:border-cyan-300`}>
             {/* Background gradient effect */}
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity dark:bg-gradient-to-br dark:from-primary/10 dark:to-transparent bg-gradient-to-br from-sky-100/50 to-transparent" />
             
@@ -321,9 +407,9 @@ const StudentDashboard = () => {
               className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/0 to-blue-500/0 group-hover:from-blue-500/20 group-hover:via-blue-500/10 group-hover:to-blue-500/0 rounded-xl transition-all duration-300 -z-10"
             />
             <select
-              aria-label="Filter by difficulty"
               value={selectedDifficulty || ""}
               onChange={(e) => setSelectedDifficulty(e.target.value || null)}
+              title="Filter projects by difficulty level"
               className="w-full px-4 py-3.5 rounded-xl dark:bg-slate-800 dark:border-slate-700 dark:text-white bg-white border border-blue-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400 transition-all duration-300 appearance-none cursor-pointer shadow-sm font-medium"
             >
               <option value="">All Difficulties</option>
@@ -349,7 +435,10 @@ const StudentDashboard = () => {
                 <motion.button
                   key={skill}
                   layout
-                  {...ANIMATIONS.filterTag}
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0, opacity: 0 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 30 } as any}
                   whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => {
@@ -729,9 +818,9 @@ const StudentDashboard = () => {
                 </motion.div>
                 
                 {/* GitHub Repository Link */}
-                {selectedProject.github && (
+                {(selectedProject as any)?.github && (
                   <motion.a
-                    href={selectedProject.github}
+                    href={(selectedProject as any).github}
                     target="_blank"
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.02, y: -2 }}
@@ -787,10 +876,10 @@ const StudentDashboard = () => {
               exit={{ scale: 0.85, y: 40, opacity: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 25 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-2xl max-h-[90vh] rounded-2xl border border-border/50 bg-card backdrop-blur-xl overflow-hidden shadow-2xl flex flex-col">
+              className="w-full max-w-2xl rounded-2xl border border-border/50 bg-card backdrop-blur-xl overflow-hidden shadow-2xl">
               
               {/* Header with gradient background */}
-              <div className="h-40 flex-shrink-0 bg-gradient-to-r from-cyan-400/30 via-blue-400/30 to-purple-400/30 relative overflow-hidden">
+              <div className="h-40 bg-gradient-to-r from-cyan-400/30 via-blue-400/30 to-purple-400/30 relative overflow-hidden">
                 <div className="absolute inset-0 opacity-30" />
                 <motion.button
                   onClick={() => setSelectedProfile(null)}
@@ -802,13 +891,13 @@ const StudentDashboard = () => {
                 </motion.button>
               </div>
 
-              <div className="px-8 pb-8 flex-1 overflow-y-auto">
+              <div className="px-8 pt-8 max-h-[calc(90vh-260px)] overflow-y-auto">
                 {/* Avatar & Name */}
                 <motion.div 
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
-                  className="flex items-end gap-5 -mt-20 mb-8">
+                  className="flex items-end gap-5 -mt-0 mb-8">
                   <motion.div 
                     whileHover={{ scale: 1.05 }}
                     className="w-28 h-28 rounded-3xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white text-4xl font-bold border-4 border-white dark:border-slate-900 shadow-xl">
@@ -856,6 +945,12 @@ const StudentDashboard = () => {
                     <p className="text-xs text-pink-700 dark:text-pink-300 mt-1 font-semibold">Followers</p>
                   </motion.div>
                   <motion.div 
+                    whileHover={{ y: -6, scale: 1.05, boxShadow: "0 15px 35px rgba(168, 85, 247, 0.3)" }}
+                    className="rounded-2xl bg-gradient-to-br from-fuchsia-100 to-fuchsia-50 dark:from-fuchsia-500/20 dark:to-fuchsia-500/10 border border-fuchsia-200 dark:border-fuchsia-500/30 p-5 text-center transition-all">
+                    <p className="text-3xl font-bold text-fuchsia-600 dark:text-fuchsia-400">{selectedProfile.following}</p>
+                    <p className="text-xs text-fuchsia-700 dark:text-fuchsia-300 mt-1 font-semibold">Following</p>
+                  </motion.div>
+                  <motion.div 
                     whileHover={{ y: -6, scale: 1.05, boxShadow: "0 15px 35px rgba(250, 204, 21, 0.3)" }}
                     className="rounded-2xl bg-gradient-to-br from-amber-100 to-amber-50 dark:from-amber-500/20 dark:to-amber-500/10 border border-amber-200 dark:border-amber-500/30 p-5 text-center transition-all">
                     <p className="text-3xl font-bold text-amber-600 dark:text-amber-400">{selectedProfile.likes}</p>
@@ -883,7 +978,19 @@ const StudentDashboard = () => {
                     {selectedProfile.skills.map((skill: string) => (
                       <motion.span
                         key={skill}
-                        className="px-4 py-2 rounded-full bg-gradient-to-r from-cyan-100 to-blue-100 dark:from-cyan-500/20 dark:to-blue-500/20 text-cyan-700 dark:text-cyan-300 text-sm font-medium border border-cyan-200 dark:border-cyan-500/30"
+                        onClick={() => {
+                          // Auto-select this skill in the filter
+                          if (!selectedSkillFilter.includes(skill)) {
+                            setSelectedSkillFilter([...selectedSkillFilter, skill]);
+                          }
+                          // Close the profile modal
+                          setSelectedProfile(null);
+                          // Scroll to projects section
+                          setTimeout(() => {
+                            document.querySelector('.space-y-8')?.scrollIntoView({ behavior: 'smooth' });
+                          }, 100);
+                        }}
+                        className="px-4 py-2 rounded-full bg-gradient-to-r from-cyan-100 to-blue-100 dark:from-cyan-500/20 dark:to-blue-500/20 text-cyan-700 dark:text-cyan-300 text-sm font-medium border border-cyan-200 dark:border-cyan-500/30 cursor-pointer transition-all"
                         whileHover={{ scale: 1.15, y: -3, boxShadow: "0 10px 25px rgba(6, 182, 212, 0.3)" }}
                         whileTap={{ scale: 0.95 }}
                       >
@@ -961,30 +1068,27 @@ const StudentDashboard = () => {
                   </div>
                 </motion.div>
 
-                {/* Action Button */}
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.35 }}
-                  className="flex gap-3">
-                  <motion.button
-                    onClick={() => {
-                      toast.success(`Message sent to ${selectedProfile.name}! 💬`);
-                      setSelectedProfile(null);
-                    }}
-                    whileHover={{ scale: 1.02, y: -2 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all">
-                    <UserPlus className="h-5 w-5" /> Send Connection Request
-                  </motion.button>
-                  <motion.button
-                    onClick={() => setSelectedProfile(null)}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="px-6 py-3.5 rounded-xl border border-border/50 text-foreground font-semibold hover:bg-muted transition-all">
-                    Close
-                  </motion.button>
-                </motion.div>
+              </div>
+
+              {/* Sticky Footer */}
+              <div className="sticky bottom-0 border-t border-border bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-6 flex gap-3 backdrop-blur-sm">
+                <motion.button
+                  onClick={() => setSelectedProfile(null)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="flex-1 rounded-lg border border-border text-foreground py-3 text-sm font-semibold hover:bg-muted transition-all">
+                  Close
+                </motion.button>
+                <motion.button
+                  onClick={() => {
+                    toast.success(`Message sent to ${selectedProfile.name}! 💬`);
+                    setSelectedProfile(null);
+                  }}
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white py-3 text-sm font-semibold shadow-lg hover:shadow-cyan-500/50 transition-all">
+                  <UserPlus className="h-5 w-5" /> Send Connection Request
+                </motion.button>
               </div>
             </motion.div>
           </motion.div>
@@ -1005,22 +1109,21 @@ const StudentDashboard = () => {
               initial={{ scale: 0.85, y: 40, opacity: 0 }}
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.85, y: 40, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              exit={{ scale: 0.9, y: 20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 } as any}
               onClick={(e) => e.stopPropagation()}
-              className={`w-full ${selectedStat === "Active Projects" || selectedStat === "Team Requests" ? "max-w-2xl" : "max-w-md"} rounded-2xl border border-border bg-card shadow-2xl max-h-[80vh] overflow-y-auto`}>
+              className={`w-full ${selectedStat === "Active Projects" || selectedStat === "Team Requests" ? "max-w-2xl" : "max-w-md"} rounded-2xl border border-border bg-card shadow-2xl overflow-hidden flex flex-col max-h-[80vh]`}>
               
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="font-heading text-2xl font-bold">{selectedStat}</h2>
-                  <motion.button 
-                    whileHover={{ scale: 1.1 }}
-                    onClick={() => setSelectedStat(null)}
-                    className="text-muted-foreground hover:text-foreground transition-colors">
-                    ✕
-                  </motion.button>
-                </div>
+              <div className="sticky top-0 border-b border-border bg-gradient-to-r from-primary/10 to-primary/5 p-6 backdrop-blur-sm flex items-center justify-between">
+                <h2 className="font-heading text-2xl font-bold">{selectedStat}</h2>
+                <motion.button 
+                  whileHover={{ scale: 1.1 }}
+                  onClick={() => setSelectedStat(null)}
+                  className="text-muted-foreground hover:text-foreground transition-colors">
+                  ✕
+                </motion.button>
+              </div>
 
+              <div className="flex-1 overflow-y-auto p-6">
                 <div className="space-y-4">
                   {selectedStat === "Active Projects" && (
                     <div className="space-y-4">
@@ -1166,61 +1269,115 @@ const StudentDashboard = () => {
                   {selectedStat === "Activity Points" && (
                     <div className="space-y-3">
                       <div className="flex items-center justify-center mb-4">
-                        <Trophy className="h-12 w-12 text-success mx-auto" />
+                        <motion.div
+                          animate={{ scale: [1, 1.1, 1] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        >
+                          <Trophy className="h-12 w-12 text-success mx-auto" />
+                        </motion.div>
                       </div>
-                      <div className="text-center mb-4">
-                        <p className="text-3xl font-bold text-success">{user?.activityPoints || 0}</p>
-                        <p className="text-sm text-muted-foreground mt-1">Total Activity Points</p>
+                      <div className="text-center mb-6">
+                        <motion.p 
+                          initial={{ scale: 0.5, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ type: "spring", stiffness: 100 }}
+                          className="text-4xl font-bold bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent">
+                          120
+                        </motion.p>
+                        <p className="text-sm text-muted-foreground mt-2">Total Activity Points</p>
+                        <Badge className="mt-3 gap-2 bg-gradient-to-r from-cyan-500/30 to-blue-500/30 border-cyan-500/50">
+                          <motion.span animate={{ rotate: [0, 360] }} transition={{ duration: 3, repeat: Infinity }}>⭐</motion.span>
+                          <span>Top Contributor</span>
+                        </Badge>
                       </div>
                       <div className="border-t border-border pt-4">
-                        <p className="text-xs font-semibold text-muted-foreground uppercase mb-3">Activity History</p>
-                        <div className="space-y-2 max-h-96 overflow-y-auto">
-                          {user?.activityHistory && user.activityHistory.length > 0 ? (
-                            user.activityHistory.map((activity) => (
-                              <motion.div
-                                key={activity.id}
-                                className="flex items-start gap-3 p-2 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                              >
-                                <div className="flex-shrink-0 mt-1">
-                                  <div className={`w-2 h-2 rounded-full ${
-                                    activity.source === "project_completed" ? "bg-success" :
-                                    activity.source === "rating_given" ? "bg-primary" :
-                                    activity.source === "team_joined" ? "bg-warning" :
-                                    "bg-info"
-                                  }`} />
+                        <p className="text-xs font-semibold text-muted-foreground uppercase mb-3">How you earned points</p>
+                        <div className="space-y-3 max-h-96 overflow-y-auto">
+                          {[
+                            { action: "Completed 3 Projects", points: 45, icon: FolderOpen },
+                            { action: "Posted 5 Ideas", points: 25, icon: Sparkles },
+                            { action: "Helped 8 Teammates", points: 30, icon: Users },
+                            { action: "Accepted in 2 Teams", points: 15, icon: Trophy },
+                            { action: "5-Day Login Streak", points: 5, icon: TrendingUp }
+                          ].map((item, idx) => (
+                            <motion.div 
+                              key={idx}
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: idx * 0.05 }}
+                              className="flex items-center justify-between p-3 rounded-lg dark:bg-slate-800/50 bg-slate-100/50 border border-border/50 hover:border-cyan-500/30 transition-all">
+                              <div className="flex items-center gap-3">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-lg dark:bg-primary/20 bg-primary/10">
+                                  <item.icon className="h-4 w-4 text-primary" />
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-medium truncate">{activity.label}</p>
-                                  <p className="text-xs text-muted-foreground flex items-center gap-2 mt-0.5">
-                                    <span>+{activity.points} pts</span>
-                                    <span>•</span>
-                                    <span>{activity.date}</span>
-                                  </p>
-                                </div>
-                              </motion.div>
-                            ))
-                          ) : (
-                            <p className="text-sm text-muted-foreground text-center py-4">No activity history yet</p>
-                          )}
+                                <span className="text-sm font-medium text-foreground">{item.action}</span>
+                              </div>
+                              <motion.span 
+                                initial={{ scale: 0.5 }}
+                                animate={{ scale: 1 }}
+                                transition={{ delay: idx * 0.05 + 0.2 }}
+                                className="font-bold text-primary text-lg">
+                                +{item.points}
+                              </motion.span>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="border-t border-border pt-4 mt-4">
+                        <p className="text-xs font-semibold text-muted-foreground uppercase mb-3">Next milestone</p>
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span>Progress to 150 points</span>
+                            <span className="font-semibold text-primary">80%</span>
+                          </div>
+                          <Progress value={80} className="h-2" />
+                          <p className="text-xs text-muted-foreground">30 points needed to unlock Contributor Badge</p>
                         </div>
                       </div>
                     </div>
                   )}
                   {selectedStat === "Skill Matches" && (
-                    <div className="text-center py-8">
-                      <TrendingUp className="h-16 w-16 text-primary mx-auto mb-4" />
-                      <p className="text-muted-foreground">{realStats[3].value} projects match your skills perfectly.</p>
-                      <p className="text-sm text-muted-foreground mt-2">{realStats[3].sub}</p>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-center mb-4">
+                        <TrendingUp className="h-12 w-12 text-primary mx-auto" />
+                      </div>
+                      <p className="text-center font-semibold text-lg">{filteredProjects.length} projects match your skills</p>
+                      <div className="space-y-3 max-h-64 overflow-y-auto">
+                        {filteredProjects.length > 0 ? (
+                          filteredProjects.map((p) => (
+                            <motion.div
+                              key={p.title}
+                              onClick={() => {
+                                setSelectedProject(p);
+                                setSelectedStat(null);
+                              }}
+                              whileHover={{ x: 8, scale: 1.02 }}
+                              className="p-3 rounded-lg bg-muted/50 border border-border/50 cursor-pointer hover:border-primary/50 transition-all">
+                              <p className="font-semibold text-sm">{p.title}</p>
+                              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{p.desc}</p>
+                              <div className="flex gap-1 mt-2 flex-wrap">
+                                {p.tags.slice(0, 2).map(tag => (
+                                  <Badge key={tag} variant="secondary" className="text-[10px]">{tag}</Badge>
+                                ))}
+                              </div>
+                            </motion.div>
+                          ))
+                        ) : (
+                          <p className="text-center text-muted-foreground text-sm py-4">No projects match your current filters</p>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
+              </div>
 
-                <motion.button 
+              {/* Sticky Close Footer */}
+              <div className="sticky bottom-0 border-t border-border bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-4 backdrop-blur-sm">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => setSelectedStat(null)}
-                  className="w-full mt-6 rounded-lg border border-border px-4 py-2.5 text-sm font-semibold hover:bg-muted transition-colors"
-                  whileHover={{ scale: 1.02 }}>
+                  className="w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-primary to-primary/80 text-white hover:shadow-lg transition-all text-sm font-semibold relative overflow-hidden group">
                   Close
                 </motion.button>
               </div>

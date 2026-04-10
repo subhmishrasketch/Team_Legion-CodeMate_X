@@ -111,10 +111,7 @@ export default function Animated3DHero() {
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-96 perspective flex items-center justify-center"
-      style={{
-        perspective: "1200px",
-      }}
+      className="relative w-full h-96 flex items-center justify-center [perspective:1200px]"
     >
       {/* Central glow */}
       <div className="absolute inset-0 flex items-center justify-center">

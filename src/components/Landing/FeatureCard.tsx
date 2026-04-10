@@ -88,8 +88,7 @@ export default function FeatureCard({
               {/* Close Button */}
               <button
                 onClick={() => setShowModal(false)}
-                aria-label="Close modal"
-                title="Close"
+                title="Close modal"
                 className="absolute top-6 right-6 p-2 hover:bg-white/10 rounded-lg transition-colors"
               >
                 <X className="w-5 h-5 text-white/60" />

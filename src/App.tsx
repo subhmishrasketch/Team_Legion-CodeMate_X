@@ -54,7 +54,7 @@ const AppRoutes = () => (
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider attribute="class" defaultTheme="system">
+    <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark">
       <TooltipProvider>
         <Toaster />
         <Sonner />

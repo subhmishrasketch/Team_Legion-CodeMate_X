@@ -1,23 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
-import { Mail, Lock, Eye, EyeOff, Github, Linkedin, Sun, Moon, Sparkles, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useTheme } from "next-themes";
-import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate, Link } from "react-router-dom";
+import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
+import Navbar from "@/components/Landing/Navbar";
+import ParticleBackground from "@/components/Landing/ParticleBackground";
 
 const Login = () => {
-  const { login, demoMode, setDemoMode } = useAuth();
-  const { theme, setTheme } = useTheme();
+  const { login, user } = useAuth();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [forgotEmail, setForgotEmail] = useState("");
   const [role, setRole] = useState<"student" | "admin">("student");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (user) navigate("/dashboard", { replace: true });
+  }, [user, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,370 +39,178 @@ const Login = () => {
     }
   };
 
-  const handleForgotPassword = () => {
-    if (!forgotEmail.trim()) {
-      toast.error("Please enter your email");
-      return;
-    }
-    toast.success(`Password reset link sent to ${forgotEmail}`);
-    setShowForgotPassword(false);
-    setForgotEmail("");
-  };
-
-  const formVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { staggerChildren: 0.1 } },
-  };
-  const fieldVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0 },
-  };
-
   return (
-    <div className={`flex min-h-screen bg-gradient-to-br ${theme === "light" ? "from-white via-primary/10 to-primary/20" : "from-background via-background to-primary/5"}`}>
-      {/* Animated gradient background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-gradient-to-br from-teal-500/20 to-indigo-500/20 blur-3xl"
-          animate={{ x: [0, 40, 0], y: [0, -30, 0] }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-gradient-to-tl from-indigo-500/20 to-blue-500/20 blur-3xl"
-          animate={{ x: [0, -40, 0], y: [0, 30, 0] }}
-          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute top-1/2 left-1/2 w-80 h-80 rounded-full bg-gradient-to-br from-blue-500/10 to-teal-500/10 blur-3xl -translate-x-1/2 -translate-y-1/2"
-          animate={{ scale: [1, 1.2, 1], rotate: [0, 180, 360] }}
-          transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
-        />
-      </div>
+    <div className="min-h-screen bg-black text-white overflow-hidden flex flex-col">
+      {/* Particle background */}
+      <ParticleBackground />
 
-      {/* Left branding */}
-      <div className="relative hidden flex-1 items-center justify-center overflow-hidden xl:flex">
+      {/* Navbar - Logo only, no nav links */}
+      <Navbar hideNavLinks={true} showLogoOnly={true} />
+
+      {/* Hero section */}
+      <section className="flex-1 relative flex items-center justify-center px-6 py-12">
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2, duration: 0.8, type: "spring", stiffness: 300, damping: 25 }}
-          className="relative z-10 flex flex-col items-center text-center px-8"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="max-w-md w-full z-10"
         >
-          <motion.div
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 4, repeat: Infinity }}
+          {/* Back to landing */}
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition-colors text-sm mb-8"
           >
-            <img
-              src="/logo.svg"
-              alt="CodeMate X"
-              className="mb-6 max-h-32 max-w-32 rounded-3xl object-contain shadow-2xl shadow-primary/50 ring-4 ring-primary/20"
-            />
-          </motion.div>
-          
-          <motion.h1 
-            className="mb-3 font-heading text-5xl font-bold bg-gradient-to-r from-teal-500 via-indigo-500 to-blue-500 bg-clip-text text-transparent"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
-            CodeMate X
-          </motion.h1>
-          
-          <motion.p 
-            className="mb-4 text-xl font-medium text-foreground/80"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-          >
-            Code together. Build better.
-          </motion.p>
-          
-          <motion.p 
-            className="max-w-sm text-foreground/60 text-lg leading-relaxed"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-          >
-            No innovative idea should fail due to lack of teammates. Find your perfect team and build something extraordinary.
-          </motion.p>
-        </motion.div>
-      </div>
+            ← Back to home
+          </Link>
 
-      {/* Right form */}
-      <div className="flex flex-1 items-center justify-center p-6 relative z-20 sm:p-8">
-        {/* theme toggle */}
-        <motion.button 
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="absolute top-6 right-6 flex h-10 w-10 items-center justify-center rounded-xl text-muted-foreground hover:bg-primary/10 hover:text-primary transition-all shadow-lg"
-          whileHover={{ scale: 1.1, rotate: 20 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <AnimatePresence mode="wait">
-            {theme === "dark" ? (
-              <motion.div key="sun" initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }}>
-                <Sun className="h-5 w-5" />
-              </motion.div>
-            ) : (
-              <motion.div key="moon" initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }}>
-                <Moon className="h-5 w-5" />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.button>
+          {/* Card Container */}
+          <div className="rounded-2xl border border-cyan-500/20 bg-gradient-to-br from-cyan-500/5 via-blue-500/5 to-purple-500/5 backdrop-blur-xl p-8 md:p-10">
+            {/* Header */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="mb-8"
+            >
+              <h1 className="text-3xl md:text-4xl font-bold mb-3">Welcome</h1>
+              <p className="text-gray-400 text-sm md:text-base">
+                Sign in to your CodeMate X account
+              </p>
+            </motion.div>
 
-        {/* Forgot Password Modal */}
-        <AnimatePresence>
-          {showForgotPassword && (
+            {/* Role Selection */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="mb-6 flex gap-3"
+            >
+              {(["student", "admin"] as const).map((r) => (
+                <button
+                  key={r}
+                  onClick={() => setRole(r)}
+                  className={`flex-1 px-4 py-2.5 rounded-lg font-medium text-sm transition-all ${
+                    role === r
+                      ? "bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 text-white shadow-lg shadow-cyan-500/20"
+                      : "bg-white/5 text-gray-400 hover:bg-white/10 border border-white/10"
+                  }`}
+                >
+                  {r === "student" ? "Student" : "Admin"}
+                </button>
+              ))}
+            </motion.div>
+
+            {/* Form */}
+            <form onSubmit={handleLogin} className="space-y-5">
+              {/* Email Field */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3.5 w-5 h-5 text-gray-500" />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@college.edu"
+                    className="w-full pl-11 pr-4 py-2.5 rounded-lg bg-white/5 border border-white/10 hover:border-white/20 focus:border-cyan-500 focus:bg-white/10 text-white placeholder-gray-500 transition-all outline-none text-sm"
+                  />
+                </div>
+              </motion.div>
+
+              {/* Password Field */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3.5 w-5 h-5 text-gray-500" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full pl-11 pr-11 py-2.5 rounded-lg bg-white/5 border border-white/10 hover:border-white/20 focus:border-cyan-500 focus:bg-white/10 text-white placeholder-gray-500 transition-all outline-none text-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-3.5 text-gray-500 hover:text-gray-300 transition-colors"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
+              </motion.div>
+
+              {/* Submit Button */}
+              <motion.button
+                type="submit"
+                disabled={isLoading}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full py-3 rounded-lg bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 text-white font-medium hover:shadow-lg hover:shadow-cyan-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-6"
+              >
+                {isLoading ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <>
+                    Sign In
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </motion.button>
+            </form>
+
+            {/* Signup link */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="text-center text-gray-400 text-sm mt-6"
+            >
+              Don't have an account?{" "}
+              <Link
+                to="/signup"
+                className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
+              >
+                Sign up now
+              </Link>
+            </motion.p>
+
+            {/* Demo hint */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
-              onClick={() => setShowForgotPassword(false)}
+              transition={{ delay: 0.7 }}
+              className="mt-6 pt-6 border-t border-white/10 space-y-2"
             >
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                className="w-full max-w-md rounded-2xl border border-border/50 bg-card backdrop-blur-xl p-8 shadow-2xl"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <h2 className="font-heading text-2xl font-bold mb-2">Forgot Password?</h2>
-                <p className="text-sm text-muted-foreground mb-6">Enter your email and we'll send you a password reset link.</p>
-                <input
-                  type="email"
-                  placeholder="your@email.com"
-                  value={forgotEmail}
-                  onChange={(e) => setForgotEmail(e.target.value)}
-                  className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm focus:border-primary focus:outline-none mb-4"
-                />
-                <div className="flex gap-3">
-                  <motion.button
-                    onClick={handleForgotPassword}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex-1 rounded-lg gradient-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity">
-                    Send Reset Link
-                  </motion.button>
-                  <motion.button
-                    onClick={() => setShowForgotPassword(false)}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex-1 rounded-lg border border-border px-4 py-2.5 text-sm font-semibold hover:bg-muted transition-colors">
-                    Cancel
-                  </motion.button>
-                </div>
-              </motion.div>
+              <p className="text-xs text-gray-500 text-center font-semibold">
+                💡 Demo Credentials:
+              </p>
+              <div className="text-xs text-gray-400 text-center space-y-1">
+                <p><span className="text-cyan-400">Student:</span> subhkumar.a.mishra24@slrtce.in / password</p>
+                <p><span className="text-cyan-400">Admin:</span> admin@college.edu / password</p>
+              </div>
             </motion.div>
-          )}
-        </AnimatePresence>
-
-        <motion.div
-          initial={{ opacity: 0, y: 30, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.6, type: "spring", stiffness: 300, damping: 25 }}
-          className="w-full max-w-md rounded-3xl border border-border/50 bg-card/70 backdrop-blur-2xl p-10 shadow-2xl"
-        >
-          <div className="mb-8 flex items-center gap-3 xl:hidden">
-            <img src="/logo.svg" alt="CodeMate X" className="h-12 w-auto rounded-lg object-contain ring-2 ring-primary/20" />
-            <div>
-              <h1 className="font-heading text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">CodeMate X</h1>
-              <p className="text-xs text-muted-foreground">Code together. Build better.</p>
-            </div>
           </div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            <h2 className="mb-2 font-heading text-3xl font-bold bg-gradient-to-r from-teal-600 to-indigo-600 bg-clip-text text-transparent">Welcome back</h2>
-            <p className="mb-8 text-muted-foreground">
-              {demoMode ? "Use demo credentials or just hit sign in" : "Sign in to your college account"}
-            </p>
-          </motion.div>
-
-          {/* demo mode switch */}
-          <motion.div 
-            className="mb-6 flex items-center gap-2 p-3 rounded-lg bg-primary/5 border border-primary/20"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            <label className="flex items-center gap-2 text-sm select-none cursor-pointer flex-1">
-              <motion.input
-                type="checkbox"
-                checked={demoMode}
-                onChange={(e) => setDemoMode(e.target.checked)}
-                className="h-4 w-4 accent-primary cursor-pointer"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              />
-              <span className="font-medium">Demo mode</span>
-            </label>
-            <span className="text-xs text-muted-foreground">
-              {demoMode ? "test account" : "enter credentials"}
-            </span>
-          </motion.div>
-
-          {/* Role toggle */}
-          <motion.div 
-            className="mb-6 flex rounded-xl bg-muted/50 p-1 backdrop-blur-sm border border-border/50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-          >
-            {(["student", "admin"] as const).map((r) => (
-              <motion.button 
-                key={r} 
-                onClick={() => setRole(r)}
-                className={`flex-1 rounded-lg py-2.5 text-sm font-semibold capitalize transition-all ${
-                  role === r ? "bg-gradient-to-r from-primary to-secondary text-white shadow-lg" : "text-muted-foreground"
-                }`}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                {r}
-              </motion.button>
-            ))}
-          </motion.div>
-
-          <form onSubmit={handleLogin} className="space-y-5">
-            {!demoMode && (
-              <>
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.5 }}
-                >
-                  <label className="mb-2 block text-sm font-semibold">College Email</label>
-                  <div className="relative group">
-                    <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                    <motion.input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="you@college.edu"
-                      className="h-12 w-full rounded-xl border border-border/50 bg-card/50 pl-11 pr-4 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 backdrop-blur-sm"
-                      whileFocus={{ scale: 1.02 }}
-                    />
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.55 }}
-                >
-                  <div className="mb-2 flex items-center justify-between">
-                    <label className="text-sm font-semibold">Password</label>
-                    <button 
-                      type="button"
-                      onClick={() => setShowForgotPassword(true)}
-                      className="text-sm text-primary hover:underline transition-colors">Forgot password?</button>
-                  </div>
-                  <div className="relative group">
-                    <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                    <motion.input
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="•••••••••"
-                      className="h-12 w-full rounded-xl border border-border/50 bg-card/50 pl-11 pr-12 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 backdrop-blur-sm"
-                      whileFocus={{ scale: 1.02 }}
-                    />
-                    <motion.button 
-                      type="button" 
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                    </motion.button>
-                  </div>
-                </motion.div>
-              </>
-            )}
-
-            <motion.button 
-              type="submit"
-              disabled={isLoading}
-              className="h-12 w-full rounded-xl font-bold text-white bg-gradient-to-r from-teal-500 to-indigo-600 shadow-lg shadow-teal-500/30 bg-gradient-anim transition-all hover:shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              whileHover={!isLoading ? { scale: 1.02, y: -2 } : {}}
-              whileTap={!isLoading ? { scale: 0.98 } : {}}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-            >
-              <AnimatePresence mode="wait">
-                {isLoading ? (
-                  <motion.div
-                    key="loading"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                  >
-                    <motion.div
-                      className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, easing: "linear" }}
-                    />
-                  </motion.div>
-                ) : (
-                  <motion.span
-                    key="text"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                  >
-                    Sign In
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </motion.button>
-          </form>
-          <motion.p 
-            className="mt-8 text-center text-sm text-muted-foreground"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.7 }}
-          >
-            Don't have an account?{' '}
-            <Link to="/signup" className="font-semibold text-primary hover:underline transition-colors">
-              Sign up for free
-            </Link>
-          </motion.p>
-          
-          {/* Social Media Links */}
-          <motion.div 
-            className="mt-8 flex justify-center gap-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.75 }}
-          >
-            <motion.a 
-              href="https://github.com/subhmishrasketch/CodeMate" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.15, y: -4 }} 
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center justify-center h-11 w-11 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/20 text-muted-foreground hover:text-primary transition-all border border-border/50 shadow-lg hover:shadow-xl"
-            >
-              <Github className="h-5 w-5" />
-            </motion.a>
-            <motion.a 
-              href="https://www.linkedin.com/in/subh-kumar-mishra-76a635374/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.15, y: -4 }} 
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center justify-center h-11 w-11 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/20 text-muted-foreground hover:text-primary transition-all border border-border/50 shadow-lg hover:shadow-xl"
-            >
-              <Linkedin className="h-5 w-5" />
-            </motion.a>
-          </motion.div>
         </motion.div>
-      </div>
+      </section>
     </div>
   );
 };

@@ -13,7 +13,6 @@ import {
 
 const studentItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Post Project", url: "/post-project", icon: FolderPlus },
   { title: "My Projects", url: "/my-projects", icon: FolderOpen },
   { title: "Smart Matching", url: "/smart-matching", icon: Sparkles },
   { title: "Revival Hub", url: "/revival-hub", icon: RefreshCw },
@@ -43,11 +42,12 @@ export function AppSidebar() {
           animate={{ scale: 1 }}
           whileHover={{ scale: 1.05 }}
           transition={{ type: "spring", stiffness: 300, damping: 18 }}
-          className="h-9 w-9 rounded-lg flex items-center justify-center bg-gradient-to-br from-blue-500 via-purple-500 to-indigo-600 text-xs font-bold text-white shadow-lg shadow-purple-500/50"
-        >CM</motion.div>
+        >
+          <img src="/logo.svg" alt="Codemate X" className="h-8 w-8" />
+        </motion.div>
         {!collapsed && (
           <div className="flex flex-col">
-            <span className="font-heading text-sm font-bold text-sidebar-primary-foreground leading-tight">CodeMate</span>
+            <span className="font-heading text-sm font-bold text-sidebar-primary-foreground leading-tight">Codemate X</span>
             <span className="text-[10px] text-sidebar-foreground/60 leading-tight">Code together. Build better.</span>
           </div>
         )}

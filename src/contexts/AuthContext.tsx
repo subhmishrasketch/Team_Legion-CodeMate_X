@@ -84,14 +84,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(demoUser);
       localStorage.setItem("currentUser", JSON.stringify(demoUser));
     } else {
-      // NOTE: in a production setup you would call your backend API,
-      // e.g. POST /api/login.  Here we stub out the HTTP request so
-      // demo mode continues to work but the skeleton shows where the
-      // MongoDB-connected server would be used.
-
       if (!credentials) {
         console.error("No credentials provided");
         throw new Error("Email and password required");
+      }
+
+      // First, check if credentials match demo users (allow login without demo mode)
+      const demoUser = DEMO_USERS[role];
+      if (demoUser && demoUser.email === credentials.email) {
+        setUser(demoUser);
+        localStorage.setItem("currentUser", JSON.stringify(demoUser));
+        return;
       }
 
       try {

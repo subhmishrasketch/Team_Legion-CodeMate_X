@@ -40,7 +40,7 @@ export default function HeroSection({
           >
             Build Teams.{" "}
             <span className="bg-gradient-to-r from-sky-400 via-cyan-400 to-blue-300 bg-clip-text text-transparent">
-              Create Impact.
+              Join Leaderboard.
             </span>{" "}
             Get Discovered.
           </motion.h1>
@@ -71,7 +71,7 @@ export default function HeroSection({
             </button>
 
             <Link
-              to="/signin"
+              to="/login"
               className="flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-semibold text-white/80 bg-white/5 border border-white/10 hover:bg-white/10 hover:text-white hover:border-white/20 hover:scale-105 active:scale-95 transition-all whitespace-nowrap text-sm sm:text-base"
             >
               Browse Teammates

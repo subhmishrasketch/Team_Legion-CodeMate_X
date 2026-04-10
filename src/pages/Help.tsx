@@ -85,12 +85,12 @@ const Help = () => {
           <h1 className="font-heading text-3xl font-bold flex items-center gap-2">
             <HelpCircle className="h-7 w-7 text-primary" /> Help & Support
           </h1>
-          <p className="mt-1 text-muted-foreground">Learn how to use CodeMate and report issues. Need more help? Email <a href="mailto:support@codemate.app" className="text-primary hover:underline">support@codemate.app</a> or join our community chat.</p>
+          <p className="mt-1 text-muted-foreground">Learn how to use Codemate X and report issues. Need more help? Email <a href="mailto:support@codemate.app" className="text-primary hover:underline">support@codemate.app</a> or join our community chat.</p>
         </div>
 
         {/* How to Use */}
         <div>
-          <h2 className="mb-4 font-heading text-xl font-bold flex items-center gap-2"><BookOpen className="h-5 w-5 text-primary" /> How to Use CodeMate</h2>
+          <h2 className="mb-4 font-heading text-xl font-bold flex items-center gap-2"><BookOpen className="h-5 w-5 text-primary" /> How to Use Codemate X</h2>
           <div className="grid gap-3 sm:grid-cols-2">
             {guides.map((g) => (
               <div key={g.title} className="rounded-xl border border-border bg-card p-4 transition-shadow hover:shadow-md">

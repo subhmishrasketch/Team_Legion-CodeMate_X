@@ -14,6 +14,9 @@ interface UserRecommendation {
   skills: string[];
   compatibility: number;
   following: boolean;
+  followers: number;
+  likes: number;
+  avgCapability: number;
 }
 
 const recommendedUsers: UserRecommendation[] = [
@@ -25,6 +28,9 @@ const recommendedUsers: UserRecommendation[] = [
     skills: ["Python", "ML/AI", "TensorFlow"],
     compatibility: 92,
     following: false,
+    followers: 342,
+    likes: 15,
+    avgCapability: 94,
   },
   {
     id: "2",
@@ -34,6 +40,9 @@ const recommendedUsers: UserRecommendation[] = [
     skills: ["Node.js", "PostgreSQL", "DevOps"],
     compatibility: 85,
     following: false,
+    followers: 289,
+    likes: 12,
+    avgCapability: 88,
   },
   {
     id: "3",
@@ -43,6 +52,9 @@ const recommendedUsers: UserRecommendation[] = [
     skills: ["React", "TypeScript", "UI/UX"],
     compatibility: 78,
     following: false,
+    followers: 198,
+    likes: 10,
+    avgCapability: 86,
   },
   {
     id: "4",
@@ -52,6 +64,9 @@ const recommendedUsers: UserRecommendation[] = [
     skills: ["MERN", "Docker", "AWS"],
     compatibility: 88,
     following: false,
+    followers: 267,
+    likes: 14,
+    avgCapability: 90,
   },
 ];
 
@@ -144,6 +159,22 @@ export default function SocialFeatures() {
                     className="h-full bg-primary origin-left"
                     style={{ width: `${user.compatibility}%` }}
                   />
+                </div>
+              </div>
+
+              {/* Social Stats */}
+              <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                <div className="rounded-lg bg-muted/50 p-2">
+                  <p className="font-semibold text-primary">{user.followers}</p>
+                  <p className="text-muted-foreground text-[10px]">Followers</p>
+                </div>
+                <div className="rounded-lg bg-muted/50 p-2">
+                  <p className="font-semibold text-red-500">{user.likes}</p>
+                  <p className="text-muted-foreground text-[10px]">Likes</p>
+                </div>
+                <div className="rounded-lg bg-muted/50 p-2">
+                  <p className="font-semibold text-emerald-500">{user.avgCapability}%</p>
+                  <p className="text-muted-foreground text-[10px]">Capability</p>
                 </div>
               </div>
 

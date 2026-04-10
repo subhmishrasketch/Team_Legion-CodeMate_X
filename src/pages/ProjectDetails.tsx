@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { projects as sharedProjects } from "@/lib/projects";
+import ProjectRating from "@/components/ProjectRating";
 
 // User profiles database
 const userProfiles: Record<string, any> = {
@@ -34,19 +34,10 @@ export default function ProjectDetails() {
     try {
       const posted = localStorage.getItem("postedProjects");
       const postedProjects = posted ? JSON.parse(posted) : [];
-      
-      // First, try to find in user's posted projects
-      let found = postedProjects.find((p: any) => p.title === title && p.owner?.email === user.email);
-      
-      // If not found, try shared projects
-      if (!found) {
-        found = sharedProjects.find((p: any) => p.title === title);
-      }
-      
-      setProject(found || null);
+      const found = postedProjects.find((p: any) => p.title === title && p.owner?.email === user.email);
+      setProject(found);
     } catch (err) {
       console.error("Error loading project:", err);
-      setProject(null);
     }
   }, [slug, user]);
 
