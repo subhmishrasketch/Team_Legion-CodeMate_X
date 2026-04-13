@@ -4,41 +4,6 @@
 
 CodeMate X is a collaborative platform designed to help students find their perfect teammates, collaborate on innovative projects, and build something amazing together. Featuring AI-powered skill matching, competitive leaderboards, and comprehensive team management - whether you're looking for teammates with specific skills, reviving abandoned ideas, or tracking your contributions through rankings, CodeMate X makes it all seamless.
 
-
-## Authentication flow
-
-## Theme & colors
-
-The app now features a fresh teal/purple color palette with warm accents. Light
-mode is the default, but you can toggle between light and dark themes using
-the sun/moon button in the header (or on the login/signup screens before you
-sign in). The colour variables are defined in `src/index.css` and automatically
-apply across all pages; dark mode overrides are provided as well.
-
-
-The app now supports a full sign‑up page (`/signup`) where users can enter their
-name, email, password, department, skills, and other profile details. The login
-screen displays a link to "Sign up" and will redirect you to the dashboard once
-authenticated.
-
-For demo/testing purposes there is a **demo mode** toggle on both login and
-signup pages. When enabled the email/password fields are ignored and the
-application simply signs in as a pre‑configured student or admin user. Toggle it
-off to use real credentials; the underlying auth methods are stubbed but ready
-for you to plug in a backend call.
-
-The UI has received some finishing touches:
-
-* Gradient backgrounds, animated blobs and glass cards on auth screens.
-* A sticky header and collapsible sidebar wrap all protected pages via
-  `DashboardLayout`.
-* Components throughout (badges, cards, inputs) now use the updated palette.
-* Dark mode support with a theme switcher is built in.
-* Layout container provides consistent spacing on dashboard and inner pages.
-
-
----
-
 ---
 
 ## 💡 Why CodeMate X ?
@@ -49,7 +14,7 @@ In traditional educational settings, finding the right teammates for projects is
 - **Idea Revival**: Great project ideas get abandoned due to team dissolution
 - **Performance Tracking**: No unified system to recognize contributions and achievements
 
-CodeMate solves these problems by providing a comprehensive ecosystem for student collaboration.
+CodeMate X solves these problems by providing a comprehensive ecosystem for student collaboration.
 
 ---
 
