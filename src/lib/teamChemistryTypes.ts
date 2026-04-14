@@ -13,6 +13,7 @@ export interface WorkStyleProfile {
   peakHoursEnd: number;
   preferredTeamSize: "small" | "medium" | "large";
   workPreference: "solo" | "collaborative" | "mixed";
+  feedbackStyle: "direct" | "positive" | "data-driven" | "reflective";
   leadingStyle?: "visionary" | "democratic" | "delegative";
   responseTime: "immediate" | "same-day" | "flexible";
   lastUpdated: Date;
@@ -39,6 +40,7 @@ export interface ChemistryScore {
   workStyleMatch: number;
   timezoneCompatibility: number;
   leadershipBalance: number;
+  feedbackMatch: number;
   recommendation: string;
   lastCalculated: Date;
 }
@@ -108,6 +110,17 @@ export const WORK_STYLE_QUESTIONS = [
       { value: "collaborative", label: "Collaborative on everything" },
       { value: "mixed", label: "Mix of both" }
     ]
+  },
+  {
+    id: "feedback-1",
+    question: "What kind of feedback do you thrive on?",
+    type: "feedback",
+    options: [
+      { value: "direct", label: "Direct and specific" },
+      { value: "positive", label: "Positive and supportive" },
+      { value: "data-driven", label: "Tied to metrics or outcomes" },
+      { value: "reflective", label: "More introspective discussion" }
+    ]
   }
 ];
 
@@ -122,6 +135,7 @@ export const SAMPLE_WORK_PROFILES: Record<string, WorkStyleProfile> = {
     peakHoursEnd: 18,
     preferredTeamSize: "medium",
     workPreference: "collaborative",
+    feedbackStyle: "direct",
     leadingStyle: "delegative",
     responseTime: "immediate",
     lastUpdated: new Date(),
@@ -136,6 +150,7 @@ export const SAMPLE_WORK_PROFILES: Record<string, WorkStyleProfile> = {
     peakHoursEnd: 23,
     preferredTeamSize: "small",
     workPreference: "mixed",
+    feedbackStyle: "positive",
     responseTime: "same-day",
     lastUpdated: new Date(),
     completedAssessment: true
@@ -149,7 +164,38 @@ export const SAMPLE_WORK_PROFILES: Record<string, WorkStyleProfile> = {
     peakHoursEnd: 5,
     preferredTeamSize: "small",
     workPreference: "solo",
+    feedbackStyle: "reflective",
     responseTime: "flexible",
+    lastUpdated: new Date(),
+    completedAssessment: true
+  },
+  "kavya@college.edu": {
+    userId: "kavya@college.edu",
+    personalityType: "support",
+    communicationStyle: "collaborative",
+    timezone: "UTC+1",
+    peakHoursStart: 8,
+    peakHoursEnd: 16,
+    preferredTeamSize: "medium",
+    workPreference: "collaborative",
+    feedbackStyle: "positive",
+    leadingStyle: "democratic",
+    responseTime: "same-day",
+    lastUpdated: new Date(),
+    completedAssessment: true
+  },
+  "alex@college.edu": {
+    userId: "alex@college.edu",
+    personalityType: "executor",
+    communicationStyle: "independent",
+    timezone: "UTC-8",
+    peakHoursStart: 15,
+    peakHoursEnd: 23,
+    preferredTeamSize: "large",
+    workPreference: "mixed",
+    feedbackStyle: "data-driven",
+    leadingStyle: "visionary",
+    responseTime: "immediate",
     lastUpdated: new Date(),
     completedAssessment: true
   }
@@ -171,13 +217,15 @@ export function calculateChemistry(profile1: WorkStyleProfile, profile2: WorkSty
   
   // Leadership balance: Team shouldn't have all leaders or all executors
   const leadershipBalance = getLeadershipBalance(profile1.personalityType, profile2.personalityType);
+  const feedbackMatch = getFeedbackMatch(profile1.feedbackStyle, profile2.feedbackStyle);
   
   const overallScore = Math.round(
-    (personalityMatch * 0.25 +
-      communicationMatch * 0.20 +
-      workStyleMatch * 0.20 +
-      timezoneCompatibility * 0.20 +
-      leadershipBalance * 0.15) / 100 * 100
+    (personalityMatch * 0.22 +
+      communicationMatch * 0.18 +
+      workStyleMatch * 0.18 +
+      timezoneCompatibility * 0.17 +
+      leadershipBalance * 0.12 +
+      feedbackMatch * 0.13) / 100 * 100
   );
 
   return {
@@ -189,6 +237,7 @@ export function calculateChemistry(profile1: WorkStyleProfile, profile2: WorkSty
     workStyleMatch,
     timezoneCompatibility,
     leadershipBalance,
+    feedbackMatch,
     recommendation: getRecommendation(overallScore),
     lastCalculated: new Date()
   };
@@ -245,6 +294,16 @@ function getLeadershipBalance(type1: PersonalityType, type2: PersonalityType): n
   if (type1 === type2) return 70;
   if ((type1 === "leader" && type2 === "executor") || (type1 === "executor" && type2 === "leader")) return 95;
   return 85;
+}
+
+function getFeedbackMatch(style1: string, style2: string): number {
+  const matches: Record<string, Record<string, number>> = {
+    direct: { direct: 95, positive: 75, "data-driven": 70, reflective: 80 },
+    positive: { direct: 75, positive: 90, "data-driven": 70, reflective: 85 },
+    "data-driven": { direct: 70, positive: 70, "data-driven": 95, reflective: 65 },
+    reflective: { direct: 80, positive: 85, "data-driven": 65, reflective: 90 }
+  };
+  return matches[style1]?.[style2] || 70;
 }
 
 function getRecommendation(score: number): string {

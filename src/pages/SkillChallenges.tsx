@@ -7,9 +7,15 @@ import { SKILL_CHALLENGES, SkillChallenge } from "@/lib/skillTypes";
 
 export function SkillChallenges() {
   const [selectedChallenge, setSelectedChallenge] = useState<SkillChallenge | null>(null);
+  const [difficultyFilter, setDifficultyFilter] = useState<"all" | "beginner" | "intermediate" | "advanced">("all");
   const [userCode, setUserCode] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+
+  const filteredChallenges =
+    difficultyFilter === "all"
+      ? SKILL_CHALLENGES
+      : SKILL_CHALLENGES.filter((challenge) => challenge.difficulty === difficultyFilter);
 
   const handleSubmit = () => {
     // Simulate code evaluation
@@ -47,12 +53,53 @@ export function SkillChallenges() {
           <p className="text-muted-foreground text-lg">
             Prove your technical skills with auto-graded coding challenges. Earn trust badges and showcase verified competencies.
           </p>
+          <p className="text-muted-foreground text-sm mt-2">
+            Hackathon-ready exercises designed for speed, collaboration, and polished delivery under pressure.
+          </p>
+          <div className="mt-6 grid gap-3 sm:grid-cols-3">
+            <div className="rounded-2xl border border-border p-4 bg-card">
+              <p className="text-sm text-muted-foreground">Challenge tracks</p>
+              <p className="mt-2 text-xl font-semibold">4 skill paths</p>
+            </div>
+            <div className="rounded-2xl border border-border p-4 bg-card">
+              <p className="text-sm text-muted-foreground">Verified badges</p>
+              <p className="mt-2 text-xl font-semibold">Bronze to Platinum</p>
+            </div>
+            <div className="rounded-2xl border border-border p-4 bg-card">
+              <p className="text-sm text-muted-foreground">Fast feedback</p>
+              <p className="mt-2 text-xl font-semibold">Instant scoring</p>
+            </div>
+          </div>
+          <div className="mt-4 rounded-2xl border border-border p-4 bg-card text-sm text-muted-foreground">
+            These challenges are designed around real-world developer workflows: front-end performance, type-safe APIs, algorithmic efficiency, and polished UI interactions.
+          </div>
         </motion.div>
 
         {!selectedChallenge ? (
           // Challenge List View
-          <div className="grid gap-4">
-            {SKILL_CHALLENGES.map((challenge, idx) => (
+          <>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-wrap gap-2">
+                {(["all", "beginner", "intermediate", "advanced"] as const).map((level) => (
+                  <button
+                    key={level}
+                    onClick={() => setDifficultyFilter(level)}
+                    className={`rounded-full border px-4 py-2 text-sm font-medium transition ${
+                      difficultyFilter === level
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-card text-muted-foreground hover:border-primary/70"
+                    }`}
+                  >
+                    {level === "all" ? "All" : level.charAt(0).toUpperCase() + level.slice(1)}
+                  </button>
+                ))}
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Showing {filteredChallenges.length} {filteredChallenges.length === 1 ? "challenge" : "challenges"}.
+              </p>
+            </div>
+            <div className="grid gap-4">
+            {filteredChallenges.map((challenge, idx) => (
               <motion.div
                 key={challenge.id}
                 initial={{ opacity: 0, y: 10 }}
@@ -94,6 +141,7 @@ export function SkillChallenges() {
               </motion.div>
             ))}
           </div>
+        </>
         ) : (
           // Challenge Detail View
           <motion.div
@@ -152,6 +200,13 @@ export function SkillChallenges() {
                     </div>
                   </div>
                 </div>
+
+                <div className="bg-card rounded-xl border border-border p-4">
+                  <h4 className="font-semibold mb-2">Why this challenge matters</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedChallenge.skillName} work often hinges on clean logic, readable patterns, and reliable output. This challenge helps you practice skills that map directly to real team projects.
+                  </p>
+                </div>
               </motion.div>
 
               {/* Code Editor */}
@@ -191,17 +246,27 @@ export function SkillChallenges() {
                           : "bg-yellow-500/20 border border-yellow-500/50"
                       }`}
                     >
-                      <div className="text-center">
-                        <div className={`text-4xl font-bold mb-2 ${
+                      <div className="space-y-4 text-center">
+                        <div className={`text-4xl font-bold ${
                           score >= 80 ? "text-green-500" : "text-yellow-500"
                         }`}>
                           {score}%
                         </div>
-                        <p className="mb-4">
+                        <p className="font-semibold text-lg">
                           {score >= 80
                             ? "Great! You passed the challenge! 🎉"
                             : "Good effort! Keep practicing!"}
                         </p>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <div className="rounded-lg bg-slate-950/70 p-3">
+                            <p className="text-sm text-muted-foreground">Challenge</p>
+                            <p className="font-semibold">{selectedChallenge.title}</p>
+                          </div>
+                          <div className="rounded-lg bg-slate-950/70 p-3">
+                            <p className="text-sm text-muted-foreground">Badge</p>
+                            <p className="font-semibold">{score >= 90 ? "Platinum" : score >= 80 ? "Gold" : "Silver"}</p>
+                          </div>
+                        </div>
                         <button
                           onClick={() => {
                             setSelectedChallenge(null);

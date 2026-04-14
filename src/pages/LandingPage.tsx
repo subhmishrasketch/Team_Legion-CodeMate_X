@@ -459,7 +459,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════════ */}
       {/* LEADERBOARD SECTION                          */}
       {/* ══════════════════════════════════════════════ */}
-      <section className="relative py-16 sm:py-20 lg:py-28 px-4 sm:px-6 lg:px-8">
+      <section id="leaderboard" className="relative py-16 sm:py-20 lg:py-28 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           {/* Heading */}
           <motion.div
@@ -574,7 +574,13 @@ export default function LandingPage() {
             {["Twitter", "Discord", "GitHub"].map((platform) => (
               <a
                 key={platform}
-                href="#"
+                href={
+                  platform === "GitHub"
+                    ? "https://github.com/subhmishrasketch/Team_Legion-Subh_Kumar_Mishra-CodeMate_X"
+                    : "#"
+                }
+                target={platform === "GitHub" ? "_blank" : undefined}
+                rel={platform === "GitHub" ? "noopener noreferrer" : undefined}
                 className="text-sm text-white/50 hover:text-white/80 transition-colors"
               >
                 {platform}

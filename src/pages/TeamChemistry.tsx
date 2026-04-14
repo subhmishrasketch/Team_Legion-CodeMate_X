@@ -31,6 +31,61 @@ export function TeamChemistry() {
     setCurrentQuestionIdx(0);
     setAnswers({});
     setShowResults(false);
+    setSelectedProfile(null);
+  };
+
+  const currentPersonality = answers["personality-1"] || "balanced";
+  const currentCommunication = answers["communication-1"] || "collaborative";
+  const currentFeedback = answers["feedback-1"] || "direct";
+
+  const matchResults = Object.entries(SAMPLE_WORK_PROFILES).map(([email, profile]) => {
+    const userProfile = {
+      userId: "current-user",
+      personalityType: currentPersonality as any,
+      communicationStyle: currentCommunication as any,
+      timezone: "IST",
+      peakHoursStart: 9,
+      peakHoursEnd: 18,
+      preferredTeamSize: (answers["teamsize-1"] || "medium") as any,
+      workPreference: answers["workpref-1"] || "mixed",
+      feedbackStyle: currentFeedback as any,
+      responseTime: "immediate" as const,
+      lastUpdated: new Date(),
+      completedAssessment: true
+    };
+
+    return {
+      email,
+      profile,
+      chemistry: calculateChemistry(userProfile, profile)
+    };
+  });
+
+  const topMatch = matchResults.reduce((best, current) => {
+    if (!best || current.chemistry.overallScore > best.chemistry.overallScore) {
+      return current;
+    }
+    return best;
+  }, matchResults[0]);
+
+  const chemistrySignature = () => {
+    if (currentPersonality === "leader" && currentCommunication === "direct") {
+      return "Bold Architect";
+    }
+    if (currentPersonality === "support" && currentCommunication === "collaborative") {
+      return "Harmony Builder";
+    }
+    if (currentPersonality === "executor" && currentFeedback === "data-driven") {
+      return "Precision Operator";
+    }
+    return "Adaptive Collaborator";
+  };
+
+  const resultTone = () => {
+    if (currentFeedback === "positive") return "You flourish with encouragement and clarity.";
+    if (currentFeedback === "data-driven") return "You want measurable progress and evidence-based feedback.";
+    if (currentFeedback === "reflective") return "You prefer thoughtful discussion over quick hits.";
+    return "You appreciate straightforward guidance and fast decisions.";
   };
 
   if (showResults) {
@@ -51,6 +106,45 @@ export function TeamChemistry() {
               Find teammates with compatible working styles and personalities
             </p>
           </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-3xl border border-border bg-card p-6 mb-6"
+          >
+            <h2 className="text-xl font-semibold mb-3">Chemistry Signature</h2>
+            <p className="text-lg font-bold mb-2">{chemistrySignature()}</p>
+            <p className="text-sm text-muted-foreground">{resultTone()}</p>
+          </motion.div>
+
+          {topMatch && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-3xl border border-border bg-card p-6 mb-6"
+            >
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <div>
+                  <h2 className="text-xl font-semibold">Best Team Match</h2>
+                  <p className="text-sm text-muted-foreground">Your strongest teammate match based on role, communication, and feedback style.</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-3xl font-bold text-primary">{topMatch.chemistry.overallScore}%</p>
+                  <p className="text-xs text-muted-foreground">Chemistry score</p>
+                </div>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-xl bg-slate-950/60 p-4 border border-border">
+                  <p className="text-sm text-muted-foreground">Top match</p>
+                  <p className="font-semibold">{topMatch.email.split("@")[0]}</p>
+                </div>
+                <div className="rounded-xl bg-slate-950/60 p-4 border border-border">
+                  <p className="text-sm text-muted-foreground">Why this works</p>
+                  <p className="text-sm">{topMatch.chemistry.recommendation}</p>
+                </div>
+              </div>
+            </motion.div>
+          )}
 
           <div className="grid lg:grid-cols-3 gap-6">
             {/* Your Profile Summary */}
@@ -97,6 +191,13 @@ export function TeamChemistry() {
                       {answers["workpref-1"] || "Mixed"}
                     </Badge>
                   </div>
+
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">Feedback Style</p>
+                    <Badge className="bg-violet-500/30 text-violet-600 border-violet-300 capitalize">
+                      {answers["feedback-1"] || "Direct"}
+                    </Badge>
+                  </div>
                 </div>
 
                 <button
@@ -128,6 +229,7 @@ export function TeamChemistry() {
                     peakHoursEnd: 18,
                     preferredTeamSize: (answers["teamsize-1"] || "medium") as any,
                     workPreference: answers["workpref-1"] || "mixed",
+                    feedbackStyle: (answers["feedback-1"] || "direct") as any,
                     responseTime: "immediate" as const,
                     lastUpdated: new Date(),
                     completedAssessment: true
@@ -190,6 +292,10 @@ export function TeamChemistry() {
                                 <div className="flex justify-between items-center">
                                   <span className="text-muted-foreground">Timezone Compatibility</span>
                                   <span className="font-semibold text-primary">{chemistry.timezoneCompatibility}%</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-muted-foreground">Feedback Style Match</span>
+                                  <span className="font-semibold text-primary">{chemistry.feedbackMatch}%</span>
                                 </div>
                               </div>
                             </motion.div>

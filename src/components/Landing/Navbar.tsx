@@ -50,7 +50,7 @@ export default function Navbar({ hideNavLinks = false, showLogoOnly = false, scr
         {/* Nav Links - Hidden on Login */}
         {!hideNavLinks && (
           <div className="hidden md:flex items-center gap-6 lg:gap-8">
-            {["Home", "Features", "Impact"].map((item) => (
+            {['Home', 'Features', 'Leaderboard'].map((item) => (
               <motion.a
                 key={item}
                 href={`#${item.toLowerCase()}`}
