@@ -193,21 +193,7 @@ const Login = () => {
               </Link>
             </motion.p>
 
-            {/* Demo hint */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.7 }}
-              className="mt-6 pt-6 border-t border-white/10 space-y-2"
-            >
-              <p className="text-xs text-gray-500 text-center font-semibold">
-                💡 Demo Credentials:
-              </p>
-              <div className="text-xs text-gray-400 text-center space-y-1">
-                <p><span className="text-cyan-400">Student:</span> subhkumar.a.mishra24@slrtce.in / password</p>
-                <p><span className="text-cyan-400">Admin:</span> admin@college.edu / password</p>
-              </div>
-            </motion.div>
+
           </div>
         </motion.div>
       </section>
