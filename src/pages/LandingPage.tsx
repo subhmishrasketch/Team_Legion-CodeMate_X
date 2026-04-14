@@ -320,6 +320,7 @@ export default function LandingPage() {
 
   return (
     <div
+      id="home"
       className="relative min-h-screen bg-slate-950 text-white overflow-x-hidden"
       onMouseMove={handleMouseMove}
     >
@@ -506,7 +507,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════════ */}
       {/* TESTIMONIALS SECTION                         */}
       {/* ══════════════════════════════════════════════ */}
-      <section className="relative py-16 sm:py-20 lg:py-28 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-950 via-blue-950/20 to-slate-950">
+      <section id="impact" className="relative py-16 sm:py-20 lg:py-28 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-950 via-blue-950/20 to-slate-950">
         <div className="max-w-7xl mx-auto">
           {/* Heading */}
           <div className="text-center mb-12 sm:mb-16">

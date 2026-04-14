@@ -126,6 +126,20 @@ const StudentDashboard = () => {
   const [selectedSkillFilter, setSelectedSkillFilter] = useState<string[]>([]);
   const [showWelcome, setShowWelcome] = useState(true);
   const [showActivityPointsModal, setShowActivityPointsModal] = useState(false);
+  const modalOpen = !!(selectedProject || selectedProfile || selectedStat || showActivityPointsModal);
+
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    if (modalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = originalOverflow;
+    }
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [modalOpen]);
+
   const [realStats, setRealStats] = useState([
     { label: "Active Projects", value: "3", sub: "2 pending requests", icon: FolderOpen, color: "text-primary" },
     { label: "Team Requests", value: "8", sub: "5 pending", icon: Users, color: "text-warning" },

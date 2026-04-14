@@ -11,7 +11,7 @@ interface NavbarProps {
 
 export default function Navbar({ hideNavLinks = false, showLogoOnly = false, scrolled: scrolledProp }: NavbarProps) {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const scrolled = scrolledProp !== undefined ? scrolledProp : isScrolled;
 
@@ -79,7 +79,10 @@ export default function Navbar({ hideNavLinks = false, showLogoOnly = false, scr
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => navigate("/logout")}
+                  onClick={() => {
+                    logout();
+                    navigate("/login");
+                  }}
                   className="px-4 sm:px-6 py-2 rounded-lg bg-gradient-to-r from-sky-600 to-blue-600 text-white text-xs sm:text-sm font-medium hover:shadow-lg hover:shadow-sky-500/50 transition-all"
                 >
                   Logout

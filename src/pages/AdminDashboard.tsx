@@ -49,6 +49,19 @@ const AdminDashboard = () => {
   const [selectedComplaint, setSelectedComplaint] = useState<any>(null);
   const [showComplaintDetail, setShowComplaintDetail] = useState(false);
   const [showEventsModal, setShowEventsModal] = useState(false);
+  const modalOpen = showComplaintDetail || showEventsModal;
+
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    if (modalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = originalOverflow;
+    }
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [modalOpen]);
 
   useEffect(() => {
     // Load complaints from localStorage

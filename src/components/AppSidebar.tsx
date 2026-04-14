@@ -18,15 +18,11 @@ const studentItems = [
   { title: "Revival Hub", url: "/revival-hub", icon: RefreshCw },
   { title: "Skill Challenges", url: "/skill-challenges", icon: Code2 },
   { title: "Team Chemistry", url: "/team-chemistry", icon: Users },
-  { title: "Leaderboard", url: "/leaderboard", icon: Trophy },
-  { title: "Help & Support", url: "/help", icon: HelpCircle },
 ];
 
 const adminItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Leaderboard", url: "/leaderboard", icon: Trophy },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
-  { title: "Help & Support", url: "/help", icon: HelpCircle },
 ];
 
 export function AppSidebar() {
